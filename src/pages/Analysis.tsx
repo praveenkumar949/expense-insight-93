@@ -5,10 +5,15 @@ import TrendLineChart from "@/components/charts/TrendLineChart";
 import ComparisonBarChart from "@/components/charts/ComparisonBarChart";
 import { format, parse, subMonths } from "date-fns";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import { exportToCSV, formatIndianCurrency } from "@/lib/csvExport";
+import { useToast } from "@/hooks/use-toast";
 
 const Analysis = () => {
   const { selectedMonth, setSelectedMonth, currentMonthData, getMonthlyData, availableMonths, expenses } =
     useExpenses();
+  const { toast } = useToast();
 
   // Get previous month data
   const previousMonthDate = subMonths(parse(selectedMonth, "yyyy-MM", new Date()), 1);
@@ -18,6 +23,23 @@ const Analysis = () => {
   // Get all months data for trend
   const allMonthsData = availableMonths.map((month) => getMonthlyData(month)).reverse();
 
+  const handleExportAll = () => {
+    if (expenses.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No expenses to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    exportToCSV(expenses, `all-expenses-${format(new Date(), "yyyy-MM-dd")}.csv`);
+    toast({
+      title: "Export Successful",
+      description: "All expenses have been exported to CSV",
+    });
+  };
+
   return (
     <div className="container py-8">
       <div className="mb-6 flex items-center justify-between">
@@ -25,11 +47,17 @@ const Analysis = () => {
           <h1 className="text-3xl font-bold">Analysis</h1>
           <p className="text-muted-foreground">Deep dive into your spending patterns</p>
         </div>
-        <MonthSelector
-          selectedMonth={selectedMonth}
-          onMonthChange={setSelectedMonth}
-          availableMonths={availableMonths}
-        />
+        <div className="flex items-center gap-3">
+          <Button onClick={handleExportAll} variant="outline" size="sm">
+            <Download className="mr-2 h-4 w-4" />
+            Export All
+          </Button>
+          <MonthSelector
+            selectedMonth={selectedMonth}
+            onMonthChange={setSelectedMonth}
+            availableMonths={availableMonths}
+          />
+        </div>
       </div>
 
       {/* Trend Analysis */}
@@ -74,7 +102,7 @@ const Analysis = () => {
                   </div>
                   <Progress value={item.percentage} className="h-3" />
                   <p className="text-sm text-muted-foreground">
-                    ${item.total.toLocaleString()} spent this month
+                    {formatIndianCurrency(item.total)} spent this month
                   </p>
                 </div>
               ))}
@@ -95,10 +123,11 @@ const Analysis = () => {
                 ).category}
               </p>
               <p className="text-sm text-muted-foreground">
-                $
-                {currentMonthData.categoryTotals
-                  .reduce((max, item) => (item.total > max.total ? item : max))
-                  .total.toLocaleString()}{" "}
+                {formatIndianCurrency(
+                  currentMonthData.categoryTotals.reduce((max, item) =>
+                    item.total > max.total ? item : max
+                  ).total
+                )}{" "}
                 spent
               </p>
             </div>
@@ -112,12 +141,11 @@ const Analysis = () => {
             <div className="rounded-lg border p-4">
               <h4 className="mb-2 font-semibold">Average Transaction</h4>
               <p className="text-2xl font-bold">
-                $
                 {currentMonthData.expenses.length > 0
-                  ? (
+                  ? formatIndianCurrency(
                       currentMonthData.totalSpending / currentMonthData.expenses.length
-                    ).toFixed(2)
-                  : "0.00"}
+                    )
+                  : "₹0"}
               </p>
               <p className="text-sm text-muted-foreground">per expense</p>
             </div>

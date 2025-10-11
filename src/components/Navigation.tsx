@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { BarChart3, PlusCircle, TrendingUp, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ThemeToggle from "./ThemeToggle";
 
 const Navigation = () => {
   const location = useLocation();
@@ -41,6 +42,7 @@ const Navigation = () => {
               </Link>
             );
           })}
+          <ThemeToggle />
         </nav>
       </div>
     </header>

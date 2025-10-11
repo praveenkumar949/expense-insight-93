@@ -1,6 +1,7 @@
 import { MonthlyData } from "@/types/finance";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
+import { formatIndianCurrency } from "@/lib/csvExport";
 
 interface ComparisonBarChartProps {
   currentMonth: MonthlyData;
@@ -49,7 +50,11 @@ const ComparisonBarChart = ({ currentMonth, previousMonth }: ComparisonBarChartP
             tick={{ fill: "hsl(var(--muted-foreground))" }}
             axisLine={{ stroke: "hsl(var(--border))" }}
           />
-          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip 
+            content={<ChartTooltipContent 
+              formatter={(value) => formatIndianCurrency(value as number)} 
+            />} 
+          />
           <Legend />
           <Bar dataKey="previous" fill="hsl(var(--muted))" radius={[8, 8, 0, 0]} />
           <Bar dataKey="current" radius={[8, 8, 0, 0]} />

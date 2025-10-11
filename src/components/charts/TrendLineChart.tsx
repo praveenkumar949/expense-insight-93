@@ -2,6 +2,7 @@ import { MonthlyData } from "@/types/finance";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { format, parse } from "date-fns";
+import { formatIndianCurrency } from "@/lib/csvExport";
 
 interface TrendLineChartProps {
   monthlyData: MonthlyData[];
@@ -31,7 +32,11 @@ const TrendLineChart = ({ monthlyData }: TrendLineChartProps) => {
             tick={{ fill: "hsl(var(--muted-foreground))" }}
             axisLine={{ stroke: "hsl(var(--border))" }}
           />
-          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip 
+            content={<ChartTooltipContent 
+              formatter={(value) => formatIndianCurrency(value as number)} 
+            />} 
+          />
           <Line
             type="monotone"
             dataKey="total"

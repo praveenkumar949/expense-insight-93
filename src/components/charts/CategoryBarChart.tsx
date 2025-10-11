@@ -1,6 +1,7 @@
 import { CategoryTotal } from "@/types/finance";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { formatIndianCurrency } from "@/lib/csvExport";
 
 interface CategoryBarChartProps {
   data: CategoryTotal[];
@@ -41,7 +42,11 @@ const CategoryBarChart = ({ data }: CategoryBarChartProps) => {
             tick={{ fill: "hsl(var(--muted-foreground))" }}
             axisLine={{ stroke: "hsl(var(--border))" }}
           />
-          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip 
+            content={<ChartTooltipContent 
+              formatter={(value) => formatIndianCurrency(value as number)} 
+            />} 
+          />
           <Bar dataKey="amount" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>

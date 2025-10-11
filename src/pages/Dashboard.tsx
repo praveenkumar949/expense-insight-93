@@ -5,6 +5,7 @@ import CategoryPieChart from "@/components/charts/CategoryPieChart";
 import CategoryBarChart from "@/components/charts/CategoryBarChart";
 import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
 import { format, parse, subMonths } from "date-fns";
+import { formatIndianCurrency } from "@/lib/csvExport";
 
 const Dashboard = () => {
   const { selectedMonth, setSelectedMonth, currentMonthData, getMonthlyData, availableMonths } =
@@ -47,7 +48,7 @@ const Dashboard = () => {
           <div className="flex items-end justify-between">
             <div>
               <p className="text-4xl font-bold">
-                ${currentMonthData.totalSpending.toLocaleString()}
+                {formatIndianCurrency(currentMonthData.totalSpending)}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -108,7 +109,7 @@ const Dashboard = () => {
                     <span className="text-sm text-muted-foreground">
                       {item.percentage.toFixed(1)}%
                     </span>
-                    <span className="font-semibold">${item.total.toLocaleString()}</span>
+                    <span className="font-semibold">{formatIndianCurrency(item.total)}</span>
                   </div>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-secondary">

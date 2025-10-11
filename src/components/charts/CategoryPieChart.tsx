@@ -1,6 +1,7 @@
 import { CategoryTotal } from "@/types/finance";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
+import { formatIndianCurrency } from "@/lib/csvExport";
 
 interface CategoryPieChartProps {
   data: CategoryTotal[];
@@ -29,7 +30,11 @@ const CategoryPieChart = ({ data }: CategoryPieChartProps) => {
     <ChartContainer config={chartConfig} className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip 
+            content={<ChartTooltipContent 
+              formatter={(value) => formatIndianCurrency(value as number)} 
+            />} 
+          />
           <Pie
             data={chartData}
             cx="50%"

@@ -12,9 +12,10 @@ import {
 } from "@/components/ui/select";
 import { useExpenses } from "@/hooks/useExpenses";
 import { Category } from "@/types/finance";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2 } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
+import { exportToCSV, formatIndianCurrency } from "@/lib/csvExport";
 import {
   Table,
   TableBody,
@@ -83,6 +84,24 @@ const Input = () => {
     });
   };
 
+  const handleExport = () => {
+    if (currentMonthData.expenses.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No expenses to export for this month",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const monthName = format(parse(currentMonthData.month, "yyyy-MM", new Date()), "MMMM-yyyy");
+    exportToCSV(currentMonthData.expenses, `expenses-${monthName}.csv`);
+    toast({
+      title: "Export Successful",
+      description: "Your expenses have been exported to CSV",
+    });
+  };
+
   return (
     <div className="container py-8">
       <div className="mb-6">
@@ -109,7 +128,7 @@ const Input = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="amount">Amount ($)</Label>
+                <Label htmlFor="amount">Amount (₹)</Label>
                 <InputField
                   id="amount"
                   type="number"
@@ -170,7 +189,7 @@ const Input = () => {
           <CardHeader>
             <CardTitle>Recent Expenses</CardTitle>
             <CardDescription>
-              Current month: ${currentMonthData.totalSpending.toLocaleString()}
+              Current month: {formatIndianCurrency(currentMonthData.totalSpending)}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -199,7 +218,7 @@ const Input = () => {
                         <TableRow key={expense.id}>
                           <TableCell>{format(expense.date, "MMM dd")}</TableCell>
                           <TableCell>{expense.category}</TableCell>
-                          <TableCell>${expense.amount.toLocaleString()}</TableCell>
+                          <TableCell>{formatIndianCurrency(expense.amount)}</TableCell>
                           <TableCell>
                             <Button
                               variant="ghost"
@@ -221,8 +240,16 @@ const Input = () => {
 
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Transaction History</CardTitle>
-          <CardDescription>All expenses for the selected month</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Transaction History</CardTitle>
+              <CardDescription>All expenses for the selected month</CardDescription>
+            </div>
+            <Button onClick={handleExport} variant="outline" size="sm">
+              <Download className="mr-2 h-4 w-4" />
+              Export CSV
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -254,7 +281,7 @@ const Input = () => {
                         <TableCell>{expense.subCategory}</TableCell>
                         <TableCell>{expense.merchant}</TableCell>
                         <TableCell className="font-semibold">
-                          ${expense.amount.toLocaleString()}
+                          {formatIndianCurrency(expense.amount)}
                         </TableCell>
                         <TableCell>
                           <Button
