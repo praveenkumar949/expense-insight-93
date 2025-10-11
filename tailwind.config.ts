@@ -47,6 +47,17 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        chart: {
+          needs: "hsl(var(--chart-needs))",
+          wants: "hsl(var(--chart-wants))",
+          investments: "hsl(var(--chart-investments))",
+          emis: "hsl(var(--chart-emis))",
+          loans: "hsl(var(--chart-loans))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
