@@ -32,10 +32,12 @@ const CategoryPieChart = ({ data }: CategoryPieChartProps) => {
         <PieChart>
           <ChartTooltip 
             content={<ChartTooltipContent 
-              formatter={(value, name) => [
-                formatIndianCurrency(value as number),
-                name as string
-              ]}
+              formatter={(value, name) => (
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold">{formatIndianCurrency(value as number)}</span>
+                  <span className="text-sm text-muted-foreground">{name as string}</span>
+                </div>
+              )}
             />} 
           />
           <Pie

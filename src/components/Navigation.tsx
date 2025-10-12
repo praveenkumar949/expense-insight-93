@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, PlusCircle, TrendingUp, Wallet } from "lucide-react";
+import { BarChart3, PlusCircle, TrendingUp, Wallet, Calculator, PiggyBank } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
 
@@ -10,6 +10,8 @@ const Navigation = () => {
     { path: "/", icon: BarChart3, label: "Dashboard" },
     { path: "/input", icon: PlusCircle, label: "Input" },
     { path: "/analysis", icon: TrendingUp, label: "Analysis" },
+    { path: "/calculators", icon: Calculator, label: "Calculators" },
+    { path: "/savings", icon: PiggyBank, label: "Savings" },
   ];
 
   return (
@@ -19,7 +21,7 @@ const Navigation = () => {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
             <Wallet className="h-6 w-6 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold sm:text-xl">FinWise</span>
+          <span className="text-lg font-bold sm:text-xl">PaisaTracker</span>
         </Link>
 
         <nav className="flex items-center gap-1">

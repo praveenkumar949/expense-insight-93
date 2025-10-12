@@ -94,19 +94,21 @@ const Analysis = () => {
         <CardHeader>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Month-to-Month Comparison</CardTitle>
+              <CardTitle className="flex flex-wrap items-center gap-2">
+                <span>Month-to-Month Comparison:</span>
+                <span className="text-primary">{format(parse(comparisonMonth1, "yyyy-MM", new Date()), "MMM yyyy")}</span>
+                <span className="text-muted-foreground">vs</span>
+                <span className="text-primary">{format(parse(comparisonMonth2, "yyyy-MM", new Date()), "MMM yyyy")}</span>
+              </CardTitle>
               <CardDescription>Compare spending across different months</CardDescription>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Compare:</span>
-                <MonthSelector
-                  selectedMonth={comparisonMonth1}
-                  onMonthChange={setComparisonMonth1}
-                  availableMonths={availableMonths}
-                />
-              </div>
-              <span className="hidden text-sm text-muted-foreground sm:block">vs</span>
+              <MonthSelector
+                selectedMonth={comparisonMonth1}
+                onMonthChange={setComparisonMonth1}
+                availableMonths={availableMonths}
+              />
+              <span className="text-sm text-muted-foreground">vs</span>
               <MonthSelector
                 selectedMonth={comparisonMonth2}
                 onMonthChange={setComparisonMonth2}

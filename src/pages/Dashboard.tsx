@@ -93,6 +93,68 @@ const Dashboard = () => {
         </Card>
       </div>
 
+      {/* Insights */}
+      <div className="mt-6 grid gap-6 md:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/10">
+                <TrendingUp className="h-4 w-4 text-blue-500" />
+              </div>
+              <CardTitle className="text-base">Spending Tip</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              {currentMonthData.categoryTotals.reduce((max, item) => 
+                item.total > max.total ? item : max
+              ).category === "Investments" 
+                ? `Your investments spending is ${currentMonthData.categoryTotals.find(c => c.category === "Investments")?.percentage.toFixed(0)}% of your total budget. Consider reviewing this category for potential savings.`
+                : `Focus on ${currentMonthData.categoryTotals.reduce((max, item) => 
+                    item.total > max.total ? item : max
+                  ).category} - it's your highest spending category this month.`
+              }
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                {isIncrease ? (
+                  <ArrowUp className="h-4 w-4 text-destructive" />
+                ) : (
+                  <ArrowDown className="h-4 w-4 text-success" />
+                )}
+              </div>
+              <CardTitle className="text-base">Monthly Trend</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Your spending has {isIncrease ? 'increased' : 'decreased'} by {Math.abs(percentageChange).toFixed(1)}% compared to last month. {isIncrease ? 'Monitor your expenses to stay on track.' : 'Great job managing your expenses!'}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10">
+                <TrendingUp className="h-4 w-4 text-amber-500" />
+              </div>
+              <CardTitle className="text-base">Budget Recommendation</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Based on your spending pattern, consider allocating {formatIndianCurrency(Math.round(currentMonthData.totalSpending * 1.1))} for next month's budget to account for variations.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Category Summary */}
       <Card className="mt-6">
         <CardHeader>

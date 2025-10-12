@@ -62,8 +62,17 @@ const ComparisonBarChart = ({ currentMonth, previousMonth }: ComparisonBarChartP
             />} 
           />
           <Legend />
-          <Bar dataKey={previousMonth.month} fill="hsl(var(--muted))" radius={[8, 8, 0, 0]} />
-          <Bar dataKey={currentMonth.month} radius={[8, 8, 0, 0]} />
+          <Bar 
+            dataKey={previousMonth.month} 
+            fill="hsl(var(--muted-foreground))" 
+            radius={[8, 8, 0, 0]} 
+            opacity={0.6}
+          />
+          <Bar 
+            dataKey={currentMonth.month} 
+            fill="hsl(var(--primary))" 
+            radius={[8, 8, 0, 0]} 
+          />
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>
