@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Expense, Category, CategoryTotal, MonthlyData } from "@/types/finance";
 import { format } from "date-fns";
 
@@ -97,9 +97,35 @@ const sampleExpenses: Expense[] = [
   },
 ];
 
+// Load expenses from localStorage or use sample data
+const loadExpenses = (): Expense[] => {
+  try {
+    const saved = localStorage.getItem("expenses");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.map((exp: any) => ({
+        ...exp,
+        date: new Date(exp.date),
+      }));
+    }
+  } catch (error) {
+    console.error("Error loading expenses:", error);
+  }
+  return sampleExpenses;
+};
+
 export const useExpenses = () => {
-  const [expenses, setExpenses] = useState<Expense[]>(sampleExpenses);
+  const [expenses, setExpenses] = useState<Expense[]>(loadExpenses);
   const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), "yyyy-MM"));
+
+  // Save to localStorage whenever expenses change
+  useEffect(() => {
+    try {
+      localStorage.setItem("expenses", JSON.stringify(expenses));
+    } catch (error) {
+      console.error("Error saving expenses:", error);
+    }
+  }, [expenses]);
 
   const addExpense = useCallback((expense: Omit<Expense, "id">) => {
     const newExpense: Expense = {

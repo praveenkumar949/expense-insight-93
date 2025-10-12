@@ -14,12 +14,12 @@ const Navigation = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
             <Wallet className="h-6 w-6 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold">FinWise</span>
+          <span className="text-lg font-bold sm:text-xl">FinWise</span>
         </Link>
 
         <nav className="flex items-center gap-1">
@@ -31,7 +31,7 @@ const Navigation = () => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:px-4",
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"

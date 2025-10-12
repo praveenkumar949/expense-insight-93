@@ -24,9 +24,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import MonthSelector from "@/components/MonthSelector";
 
 const Input = () => {
-  const { addExpense, currentMonthData, deleteExpense } = useExpenses();
+  const { addExpense, currentMonthData, deleteExpense, selectedMonth, setSelectedMonth, availableMonths } = useExpenses();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -103,9 +104,9 @@ const Input = () => {
   };
 
   return (
-    <div className="container py-8">
+    <div className="container px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Log New Expense</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl">Log New Expense</h1>
         <p className="text-muted-foreground">Add your expenses to track your spending</p>
       </div>
 
@@ -240,15 +241,22 @@ const Input = () => {
 
       <Card className="mt-6">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Transaction History</CardTitle>
               <CardDescription>All expenses for the selected month</CardDescription>
             </div>
-            <Button onClick={handleExport} variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Export CSV
-            </Button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <MonthSelector
+                selectedMonth={selectedMonth}
+                onMonthChange={setSelectedMonth}
+                availableMonths={availableMonths}
+              />
+              <Button onClick={handleExport} variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

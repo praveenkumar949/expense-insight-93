@@ -26,10 +26,10 @@ const Dashboard = () => {
   const isIncrease = percentageChange > 0;
 
   return (
-    <div className="container py-8">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="container px-4 py-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">Dashboard</h1>
           <p className="text-muted-foreground">Track your monthly expenses at a glance</p>
         </div>
         <MonthSelector
@@ -45,9 +45,9 @@ const Dashboard = () => {
           <CardTitle>Total Monthly Spending</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="text-4xl font-bold">
+              <p className="text-3xl font-bold sm:text-4xl">
                 {formatIndianCurrency(currentMonthData.totalSpending)}
               </p>
             </div>

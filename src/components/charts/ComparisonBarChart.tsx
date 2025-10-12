@@ -25,15 +25,21 @@ const ComparisonBarChart = ({ currentMonth, previousMonth }: ComparisonBarChartP
 
     return {
       category,
-      current: currentTotal,
-      previous: previousTotal,
+      [currentMonth.month]: currentTotal,
+      [previousMonth.month]: previousTotal,
       fill: COLORS[category as keyof typeof COLORS],
     };
   });
 
   const chartConfig = {
-    current: { label: "Current Month" },
-    previous: { label: "Previous Month" },
+    [currentMonth.month]: { 
+      label: currentMonth.month,
+      color: "hsl(var(--primary))"
+    },
+    [previousMonth.month]: { 
+      label: previousMonth.month,
+      color: "hsl(var(--muted))"
+    },
   };
 
   return (
@@ -56,8 +62,8 @@ const ComparisonBarChart = ({ currentMonth, previousMonth }: ComparisonBarChartP
             />} 
           />
           <Legend />
-          <Bar dataKey="previous" fill="hsl(var(--muted))" radius={[8, 8, 0, 0]} />
-          <Bar dataKey="current" radius={[8, 8, 0, 0]} />
+          <Bar dataKey={previousMonth.month} fill="hsl(var(--muted))" radius={[8, 8, 0, 0]} />
+          <Bar dataKey={currentMonth.month} radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>
