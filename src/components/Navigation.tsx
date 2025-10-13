@@ -1,10 +1,23 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, PlusCircle, TrendingUp, Wallet, Calculator, PiggyBank } from "lucide-react";
+import { BarChart3, PlusCircle, TrendingUp, Wallet, Calculator, PiggyBank, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const Navigation = () => {
   const location = useLocation();
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed out successfully",
+      description: "See you again soon!",
+    });
+  };
 
   const navItems = [
     { path: "/", icon: BarChart3, label: "Dashboard" },
@@ -44,8 +57,20 @@ const Navigation = () => {
               </Link>
             );
           })}
-          <ThemeToggle />
         </nav>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              title="Sign Out"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   );

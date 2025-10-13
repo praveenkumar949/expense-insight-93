@@ -80,8 +80,10 @@ const SimpleCalculator = () => {
       </CardHeader>
       <CardContent>
         <div className="mx-auto max-w-xs space-y-4">
-          <div className="rounded-lg border-2 border-border bg-muted p-4 text-right text-3xl font-bold">
-            {display}
+          <div className="rounded-lg border-2 border-border bg-muted p-4 text-right">
+            <div className="overflow-x-auto text-3xl font-bold break-all">
+              {display}
+            </div>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {buttons.map((row, i) =>

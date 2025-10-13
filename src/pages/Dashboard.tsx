@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useExpenses } from "@/hooks/useExpenses";
+import { useProfile } from "@/hooks/useProfile";
 import MonthSelector from "@/components/MonthSelector";
 import CategoryPieChart from "@/components/charts/CategoryPieChart";
 import CategoryBarChart from "@/components/charts/CategoryBarChart";
@@ -10,6 +11,7 @@ import { formatIndianCurrency } from "@/lib/csvExport";
 const Dashboard = () => {
   const { selectedMonth, setSelectedMonth, currentMonthData, getMonthlyData, availableMonths } =
     useExpenses();
+  const { profile } = useProfile();
 
   // Get previous month data for comparison
   const previousMonthDate = subMonths(parse(selectedMonth, "yyyy-MM", new Date()), 1);
@@ -29,7 +31,9 @@ const Dashboard = () => {
     <div className="container px-4 py-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Dashboard</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">
+            Welcome{profile?.full_name ? `, ${profile.full_name}` : ''}!
+          </h1>
           <p className="text-muted-foreground">Track your monthly expenses at a glance</p>
         </div>
         <MonthSelector
