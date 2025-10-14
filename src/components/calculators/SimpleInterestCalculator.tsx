@@ -6,60 +6,59 @@ import { Button } from "@/components/ui/button";
 import { formatIndianCurrency } from "@/lib/csvExport";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
-const EMICalculator = () => {
+const SimpleInterestCalculator = () => {
   const [principal, setPrincipal] = useState<string>("");
   const [rate, setRate] = useState<string>("");
-  const [tenure, setTenure] = useState<string>("");
+  const [time, setTime] = useState<string>("");
   const [result, setResult] = useState<{
-    emi: number;
+    interest: number;
     totalAmount: number;
-    totalInterest: number;
     chartData: Array<{ name: string; value: number }>;
   } | null>(null);
 
-  const calculateEMI = () => {
+  const calculateSimpleInterest = () => {
     const p = parseFloat(principal);
-    const r = parseFloat(rate) / 12 / 100;
-    const n = parseFloat(tenure);
+    const r = parseFloat(rate) / 100;
+    const t = parseFloat(time);
 
-    if (p && r && n) {
-      const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-      const totalAmount = emi * n;
-      const totalInterest = totalAmount - p;
+    if (p && r && t) {
+      const interest = p * r * t;
+      const totalAmount = p + interest;
 
       setResult({
-        emi: Math.round(emi),
+        interest: Math.round(interest),
         totalAmount: Math.round(totalAmount),
-        totalInterest: Math.round(totalInterest),
         chartData: [
           { name: "Principal", value: Math.round(p) },
-          { name: "Interest", value: Math.round(totalInterest) },
+          { name: "Interest", value: Math.round(interest) },
         ],
       });
     }
   };
 
+  const COLORS = ["hsl(var(--primary))", "hsl(var(--chart-wants))"];
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>EMI Calculator</CardTitle>
-        <CardDescription>Calculate your monthly loan payments</CardDescription>
+        <CardTitle>Simple Interest Calculator</CardTitle>
+        <CardDescription>Calculate simple interest on your investment</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="principal">Loan Amount (₹)</Label>
+          <Label htmlFor="si-principal">Principal Amount (₹)</Label>
           <Input
-            id="principal"
+            id="si-principal"
             type="number"
-            placeholder="Enter loan amount"
+            placeholder="Enter principal amount"
             value={principal}
             onChange={(e) => setPrincipal(e.target.value)}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="rate">Interest Rate (% per annum)</Label>
+          <Label htmlFor="si-rate">Interest Rate (% per annum)</Label>
           <Input
-            id="rate"
+            id="si-rate"
             type="number"
             placeholder="Enter interest rate"
             value={rate}
@@ -67,38 +66,38 @@ const EMICalculator = () => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="tenure">Loan Tenure (months)</Label>
+          <Label htmlFor="si-time">Time Period (years)</Label>
           <Input
-            id="tenure"
+            id="si-time"
             type="number"
-            placeholder="Enter tenure in months"
-            value={tenure}
-            onChange={(e) => setTenure(e.target.value)}
+            placeholder="Enter time period"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
           />
         </div>
-        <Button onClick={calculateEMI} className="w-full">
-          Calculate EMI
+        <Button onClick={calculateSimpleInterest} className="w-full">
+          Calculate Simple Interest
         </Button>
 
         {result && (
           <>
             <div className="space-y-3 rounded-lg border bg-muted p-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Monthly EMI</span>
-                <span className="text-xl font-bold text-primary">{formatIndianCurrency(result.emi)}</span>
+                <span className="text-sm font-medium">Total Amount</span>
+                <span className="text-xl font-bold text-primary">{formatIndianCurrency(result.totalAmount)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Total Amount Payable</span>
-                <span className="text-lg font-semibold">{formatIndianCurrency(result.totalAmount)}</span>
+                <span className="text-sm font-medium">Principal</span>
+                <span className="text-lg font-semibold">{formatIndianCurrency(parseFloat(principal))}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Total Interest</span>
-                <span className="text-lg font-semibold">{formatIndianCurrency(result.totalInterest)}</span>
+                <span className="text-sm font-medium">Interest Earned</span>
+                <span className="text-lg font-semibold text-success">{formatIndianCurrency(result.interest)}</span>
               </div>
             </div>
 
             <div className="mt-4">
-              <h4 className="mb-2 text-sm font-semibold">Loan Breakdown</h4>
+              <h4 className="mb-2 text-sm font-semibold">Interest Breakdown</h4>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -112,7 +111,7 @@ const EMICalculator = () => {
                     dataKey="value"
                   >
                     {result.chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index === 0 ? "hsl(var(--primary))" : "hsl(var(--chart-wants))"} />
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip formatter={(value: number) => `₹${value.toLocaleString("en-IN")}`} />
@@ -127,4 +126,4 @@ const EMICalculator = () => {
   );
 };
 
-export default EMICalculator;
+export default SimpleInterestCalculator;

@@ -7,14 +7,18 @@ import ComparisonBarChart from "@/components/charts/ComparisonBarChart";
 import { format, parse, subMonths } from "date-fns";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Download, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Mail, Settings } from "lucide-react";
 import { exportToCSV, formatIndianCurrency } from "@/lib/csvExport";
 import { useToast } from "@/hooks/use-toast";
+import SendReportDialog from "@/components/SendReportDialog";
+import ReportSettingsDialog from "@/components/ReportSettingsDialog";
 
 const Analysis = () => {
   const { selectedMonth, setSelectedMonth, currentMonthData, getMonthlyData, availableMonths, expenses } =
     useExpenses();
   const { toast } = useToast();
+  const [showSendReport, setShowSendReport] = useState(false);
+  const [showReportSettings, setShowReportSettings] = useState(false);
 
   // Comparison month selectors
   const [comparisonMonth1, setComparisonMonth1] = useState<string>(selectedMonth);
@@ -66,6 +70,14 @@ const Analysis = () => {
           <p className="text-muted-foreground">Deep dive into your spending patterns</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Button onClick={() => setShowSendReport(true)} variant="outline" size="sm">
+            <Mail className="mr-2 h-4 w-4" />
+            Email Report
+          </Button>
+          <Button onClick={() => setShowReportSettings(true)} variant="outline" size="sm">
+            <Settings className="mr-2 h-4 w-4" />
+            Auto Reports
+          </Button>
           <Button onClick={handleExportAll} variant="outline" size="sm">
             <Download className="mr-2 h-4 w-4" />
             Export All
@@ -242,6 +254,9 @@ const Analysis = () => {
           </CardContent>
         </Card>
       </div>
+
+      <SendReportDialog open={showSendReport} onOpenChange={setShowSendReport} />
+      <ReportSettingsDialog open={showReportSettings} onOpenChange={setShowReportSettings} />
     </div>
   );
 };

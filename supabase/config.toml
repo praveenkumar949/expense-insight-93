@@ -1,1 +1,4 @@
 project_id = "vxjohmcjtfojuljiygds"
+
+[functions.send-expense-report]
+verify_jwt = true

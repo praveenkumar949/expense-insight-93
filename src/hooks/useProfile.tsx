@@ -8,6 +8,8 @@ interface Profile {
   phone_number: string | null;
   email: string;
   monthly_report_enabled: boolean;
+  report_frequency: string | null;
+  last_report_sent_at: string | null;
 }
 
 export const useProfile = () => {

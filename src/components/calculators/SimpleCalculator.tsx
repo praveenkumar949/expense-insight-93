@@ -8,7 +8,14 @@ const SimpleCalculator = () => {
   const [operation, setOperation] = useState<string | null>(null);
   const [newNumber, setNewNumber] = useState(true);
 
+  // Sound effect for button press
+  const playTapSound = () => {
+    const audio = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUKnn77RgGwU7k9n0yXkpBSh+zPLaizsKGGS65+ihUBELTKXh8bllHAU2jdTxy3UmBSt9y/HciTsLF2S75+mjUBEKTKXi8bllHAU1jdTxy3YmBSx+y/HcizsKGGW65+mjTxELTKPi8rpkGwU4jdTwyXUnBSx9yvLdiTsLGGS65+ijUREKTKTh8bllHAU2jdTwy3YmBSt9y/HdiTwKGGS65+mjUREKTKTi8bllHAU2jtTwy3YmBSt9y/HdiTwKGGS65+mjUREKTKTi8rhlHAU3jdTwy3UmBSx9y/HdiTsLGGS65+mjUBELTKTi8bllHAU1jdXxy3YmBSt9y/HdiTwKGGO75+mjUREKTKPi8bllHAU2jdTxy3UnBSx9yvHdiTwKGGS65+mjUBELTKTi8rhlHAU3jdTxy3YmBSx9y/HciTwLGGS65+mjUBELTKPh8rllHQU2jdTxy3UnBSx+y/HdiTwKGGS65+mjTxELTKPi8rllHQU1jdTxy3YnBSt+y/HdiTwKGGO75+mjUBEKTKPh8rllHQU2jdTxy3UnBSx+y/HdiTwKGGO75+ijUBELTKPh8rllHAU2jdTxy3UnBSt+y/HdiTwKGGO75+ijUBELTKTh8rllHAU2jdTwy3UnBSt+y/HdiTwKGGO75+mjUBELTKPh8rllHAU2jdTxy3UnBSx9y/HdiTwKGGO75+mjUBELTKTh8rllHAU2jdTxy3UnBSt+y/HdiTwKGGS65+mjUBELTKPh8rllHQU2jdTxy3YnBSx9y/HdiTwKGGS65+mjTxELTKPh8rllHQU2jdTxy3YnBSx9y/HdiTwKGGS65+mjTxELTKPh8rllHQU2jdTxy3YnBSt9y/HdiTwKGGS65+mjUBEKTKPi8rllHQU1jdTxy3YnBSx9y/HdiTwKGGS65+mjUBELTKPi8rllHQU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKPi8rllHQU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHQU2jdTxy3UnBSt+y/HdiTwKGGS65+mjUBELTKPh8rllHQU2jdTxy3YnBSt+y/HdiTwKGGO75+mjUBELTKPh8rllHQU2jdTxy3UnBSt+y/HdiTwKGGO75+mjUBELTKPh8rllHQU2jdTxy3YnBSt+y/HdiTwKGGO75+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKPh8rllHAU2jdTxy3YnBSx9y/HdiTwKGGS65+mjUBELTKPh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKPh8rllHAU2jdTxy3YnBSx9y/HdiTwKGGS65+mjUBELTKPh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKPh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKTh8rllHAU2jdTxy3YnBSt+y/HdiTwKGGS65+mjUBELTKPh8rllHAU2jdTxy3YnBSx9y/Hd");
+    audio.play().catch(() => {}); // Ignore errors if audio fails
+  };
+
   const handleNumber = (num: string) => {
+    playTapSound();
     if (newNumber) {
       setDisplay(num);
       setNewNumber(false);
@@ -18,6 +25,7 @@ const SimpleCalculator = () => {
   };
 
   const handleOperation = (op: string) => {
+    playTapSound();
     const current = parseFloat(display);
     if (previousValue === null) {
       setPreviousValue(current);
@@ -81,6 +89,9 @@ const SimpleCalculator = () => {
       <CardContent>
         <div className="mx-auto max-w-xs space-y-4">
           <div className="rounded-lg border-2 border-border bg-muted p-4 text-right">
+            <div className="mb-1 text-sm text-muted-foreground">
+              {previousValue !== null && operation && `${previousValue} ${operation}`}
+            </div>
             <div className="overflow-x-auto text-3xl font-bold break-all">
               {display}
             </div>
