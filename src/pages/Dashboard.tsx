@@ -4,6 +4,7 @@ import { useProfile } from "@/hooks/useProfile";
 import MonthSelector from "@/components/MonthSelector";
 import CategoryPieChart from "@/components/charts/CategoryPieChart";
 import CategoryBarChart from "@/components/charts/CategoryBarChart";
+import FinancialNewsSection from "@/components/FinancialNewsSection";
 import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
 import { format, parse, subMonths } from "date-fns";
 import { formatIndianCurrency } from "@/lib/csvExport";
@@ -189,6 +190,11 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Financial News */}
+      <div className="mt-6">
+        <FinancialNewsSection />
+      </div>
     </div>
   );
 };

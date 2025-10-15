@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, TrendingUp, TrendingDown, Wallet, CreditCard, Percent, DollarSign, LineChart } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, Wallet, CreditCard, Percent, DollarSign, LineChart, ArrowDownUp } from "lucide-react";
 import SimpleCalculator from "@/components/calculators/SimpleCalculator";
 import EMICalculator from "@/components/calculators/EMICalculator";
 import SIPCalculator from "@/components/calculators/SIPCalculator";
@@ -10,6 +10,7 @@ import LumpsumCalculator from "@/components/calculators/LumpsumCalculator";
 import InflationCalculator from "@/components/calculators/InflationCalculator";
 import SimpleInterestCalculator from "@/components/calculators/SimpleInterestCalculator";
 import CompoundInterestCalculator from "@/components/calculators/CompoundInterestCalculator";
+import SWPCalculator from "@/components/calculators/SWPCalculator";
 
 const calculators = [
   { value: "simple", label: "Simple Calculator", icon: Calculator },
@@ -17,6 +18,7 @@ const calculators = [
   { value: "sip", label: "SIP Calculator", icon: TrendingUp },
   { value: "stepup", label: "Step-Up SIP", icon: TrendingDown },
   { value: "lumpsum", label: "Lumpsum Calculator", icon: Wallet },
+  { value: "swp", label: "SWP Calculator", icon: ArrowDownUp },
   { value: "simple-interest", label: "Simple Interest", icon: Percent },
   { value: "compound-interest", label: "Compound Interest", icon: DollarSign },
   { value: "inflation", label: "Inflation Calculator", icon: LineChart },
@@ -91,6 +93,10 @@ const Calculators = () => {
 
         <TabsContent value="lumpsum">
           <LumpsumCalculator />
+        </TabsContent>
+
+        <TabsContent value="swp">
+          <SWPCalculator />
         </TabsContent>
 
         <TabsContent value="simple-interest">

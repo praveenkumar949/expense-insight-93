@@ -9,6 +9,8 @@ import { formatIndianCurrency } from "@/lib/csvExport";
 import { format } from "date-fns";
 import { Trash2, PiggyBank, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SavingsGoalsSection from "@/components/SavingsGoalsSection";
+import SavingsInsightsSection from "@/components/SavingsInsightsSection";
 
 const Savings = () => {
   const { savings, addSavings, deleteSavings, totalSavings } = useSavings();
@@ -77,6 +79,16 @@ const Savings = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Savings Goals */}
+      <div className="mb-6">
+        <SavingsGoalsSection />
+      </div>
+
+      {/* Savings Insights & Trends */}
+      <div className="mb-6">
+        <SavingsInsightsSection />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Add Savings Form */}
