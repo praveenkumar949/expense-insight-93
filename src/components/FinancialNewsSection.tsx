@@ -13,31 +13,31 @@ const FinancialNewsSection = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Mock financial news - In production, integrate with a real news API
+  // Financial news with real URLs
   useEffect(() => {
     const mockNews: NewsItem[] = [
       {
         title: "Stock Market Reaches New Highs Amid Economic Recovery",
         source: "Financial Times",
-        url: "#",
+        url: "https://www.ft.com/markets",
         publishedAt: new Date().toISOString(),
       },
       {
         title: "RBI Announces New Interest Rate Policy",
         source: "Economic Times",
-        url: "#",
+        url: "https://economictimes.indiatimes.com/markets",
         publishedAt: new Date().toISOString(),
       },
       {
         title: "Top Investment Strategies for 2025",
         source: "Money Control",
-        url: "#",
+        url: "https://www.moneycontrol.com/news/business/markets/",
         publishedAt: new Date().toISOString(),
       },
       {
         title: "Mutual Funds Show Strong Performance This Quarter",
         source: "Business Standard",
-        url: "#",
+        url: "https://www.business-standard.com/markets",
         publishedAt: new Date().toISOString(),
       },
     ];
@@ -72,7 +72,7 @@ const FinancialNewsSection = () => {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start justify-between gap-3 p-3 rounded-lg border hover:bg-accent transition-colors group"
+                className="flex items-start justify-between gap-3 p-3 rounded-lg border hover:bg-accent/50 dark:hover:bg-accent transition-colors group"
               >
                 <div className="flex-1">
                   <h4 className="font-medium text-sm group-hover:text-primary transition-colors">

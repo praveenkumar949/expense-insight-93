@@ -7,6 +7,7 @@ interface Profile {
   full_name: string;
   phone_number: string | null;
   email: string;
+  avatar_url: string | null;
   monthly_report_enabled: boolean;
   report_frequency: string | null;
   last_report_sent_at: string | null;

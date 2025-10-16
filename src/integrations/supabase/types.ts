@@ -44,8 +44,45 @@ export type Database = {
         }
         Relationships: []
       }
+      finnotes: {
+        Row: {
+          category: string | null
+          color: string | null
+          content: string
+          created_at: string
+          id: string
+          is_pinned: boolean | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string | null
           email: string
           full_name: string
@@ -57,6 +94,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
           email: string
           full_name: string
@@ -68,6 +106,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string
           full_name?: string
@@ -86,6 +125,7 @@ export type Database = {
           current_amount: number | null
           goal_name: string
           id: string
+          notes: string | null
           target_amount: number
           target_date: string | null
           updated_at: string | null
@@ -96,6 +136,7 @@ export type Database = {
           current_amount?: number | null
           goal_name: string
           id?: string
+          notes?: string | null
           target_amount: number
           target_date?: string | null
           updated_at?: string | null
@@ -106,6 +147,7 @@ export type Database = {
           current_amount?: number | null
           goal_name?: string
           id?: string
+          notes?: string | null
           target_amount?: number
           target_date?: string | null
           updated_at?: string | null

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, PlusCircle, TrendingUp, Wallet, Calculator, PiggyBank } from "lucide-react";
+import { BarChart3, PlusCircle, TrendingUp, Wallet, Calculator, PiggyBank, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
 import ProfileSheet from "./ProfileSheet";
@@ -11,8 +11,9 @@ const Navigation = () => {
     { path: "/", icon: BarChart3, label: "Dashboard" },
     { path: "/input", icon: PlusCircle, label: "Input" },
     { path: "/analysis", icon: TrendingUp, label: "Analysis" },
-    { path: "/calculators", icon: Calculator, label: "Calculators" },
     { path: "/savings", icon: PiggyBank, label: "Savings" },
+    { path: "/finnote", icon: FileText, label: "FinNote" },
+    { path: "/calculators", icon: Calculator, label: "Calculators" },
   ];
 
   return (

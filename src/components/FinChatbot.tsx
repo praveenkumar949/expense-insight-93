@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { MessageCircle, X, Send, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Message {
   role: "user" | "assistant";
@@ -12,6 +13,7 @@ interface Message {
 }
 
 const FinChatbot = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -23,6 +25,18 @@ const FinChatbot = () => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Reset messages when user changes (new login)
+  useEffect(() => {
+    if (user) {
+      setMessages([
+        {
+          role: "assistant",
+          content: "Hi! I'm Fin, your financial assistant. How can I help you today?",
+        },
+      ]);
+    }
+  }, [user?.id]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

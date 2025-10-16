@@ -1,16 +1,14 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Info, Instagram, Linkedin, Github, Mail, Twitter } from "lucide-react";
 
-const CreatorInfoDialog = () => {
+interface CreatorInfoDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const CreatorInfoDialog = ({ open, onOpenChange }: CreatorInfoDialogProps) => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="w-full justify-start">
-          <Info className="mr-2 h-4 w-4" />
-          About & Connect
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>About FinGuide</DialogTitle>

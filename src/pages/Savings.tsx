@@ -4,22 +4,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSavings } from "@/hooks/useSavings";
 import { formatIndianCurrency } from "@/lib/csvExport";
 import { format } from "date-fns";
 import { Trash2, PiggyBank, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import SavingsGoalsSection from "@/components/SavingsGoalsSection";
 import SavingsInsightsSection from "@/components/SavingsInsightsSection";
 
 const Savings = () => {
   const { savings, addSavings, deleteSavings, totalSavings } = useSavings();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [amount, setAmount] = useState("");
   const [source, setSource] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedGoalId, setSelectedGoalId] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: goals = [] } = useQuery({
+    queryKey: ["savings-goals", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("savings_goals")
+        .select("*")
+        .eq("user_id", user?.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!amount || !source) {
@@ -38,9 +59,29 @@ const Savings = () => {
       description: description || undefined,
     });
 
+    // Update goal if selected
+    if (selectedGoalId && user) {
+      const selectedGoal = goals.find(g => g.id === selectedGoalId);
+      if (selectedGoal) {
+        const newAmount = (selectedGoal.current_amount || 0) + parseFloat(amount);
+        const { error } = await supabase
+          .from("savings_goals")
+          .update({ current_amount: newAmount })
+          .eq("id", selectedGoalId);
+
+        if (!error) {
+          toast({
+            title: "Goal Updated",
+            description: "Your savings have been added to the selected goal",
+          });
+        }
+      }
+    }
+
     setAmount("");
     setSource("");
     setDescription("");
+    setSelectedGoalId("");
 
     toast({
       title: "Savings Added",
@@ -126,6 +167,21 @@ const Savings = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="goal">Add to Savings Goal (Optional)</Label>
+                <Select value={selectedGoalId} onValueChange={setSelectedGoalId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a goal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {goals.map((goal) => (
+                      <SelectItem key={goal.id} value={goal.id}>
+                        {goal.goal_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit" className="w-full">
                 Add Savings
