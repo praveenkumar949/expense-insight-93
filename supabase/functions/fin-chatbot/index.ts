@@ -41,6 +41,7 @@ Keep responses concise, friendly, and practical. Always remind users to consult 
           },
           ...messages,
         ],
+        stream: true,
       }),
     });
 
@@ -50,15 +51,15 @@ Keep responses concise, friendly, and practical. Always remind users to consult 
       throw new Error(`AI API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const assistantResponse = data.choices[0].message.content;
-
-    return new Response(
-      JSON.stringify({ response: assistantResponse }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    // Return streaming response
+    return new Response(response.body, {
+      headers: { 
+        ...corsHeaders, 
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      },
+    });
   } catch (error: any) {
     console.error("Error in fin-chatbot function:", error);
     return new Response(

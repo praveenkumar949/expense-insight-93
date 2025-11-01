@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, TrendingUp, TrendingDown, Wallet, CreditCard, Percent, DollarSign, LineChart, ArrowDownUp, Landmark } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, Wallet, CreditCard, Percent, DollarSign, LineChart, ArrowDownUp, Landmark, Shield } from "lucide-react";
 import SimpleCalculator from "@/components/calculators/SimpleCalculator";
 import EMICalculator from "@/components/calculators/EMICalculator";
 import SIPCalculator from "@/components/calculators/SIPCalculator";
@@ -12,6 +12,7 @@ import SimpleInterestCalculator from "@/components/calculators/SimpleInterestCal
 import CompoundInterestCalculator from "@/components/calculators/CompoundInterestCalculator";
 import SWPCalculator from "@/components/calculators/SWPCalculator";
 import FDCalculator from "@/components/calculators/FDCalculator";
+import InsuranceCalculator from "@/components/calculators/InsuranceCalculator";
 
 const calculators = [
   { value: "simple", label: "Simple Calculator", icon: Calculator },
@@ -21,6 +22,7 @@ const calculators = [
   { value: "lumpsum", label: "Lumpsum Calculator", icon: Wallet },
   { value: "swp", label: "SWP Calculator", icon: ArrowDownUp },
   { value: "fd", label: "Fixed Deposit", icon: Landmark },
+  { value: "insurance", label: "Insurance Calculator", icon: Shield },
   { value: "simple-interest", label: "Simple Interest", icon: Percent },
   { value: "compound-interest", label: "Compound Interest", icon: DollarSign },
   { value: "inflation", label: "Inflation Calculator", icon: LineChart },
@@ -111,6 +113,10 @@ const Calculators = () => {
 
         <TabsContent value="fd">
           <FDCalculator />
+        </TabsContent>
+
+        <TabsContent value="insurance">
+          <InsuranceCalculator />
         </TabsContent>
 
         <TabsContent value="inflation">

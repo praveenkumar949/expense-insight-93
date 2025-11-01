@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import { useSavings } from "@/hooks/useSavings";
 import { formatIndianCurrency } from "@/lib/csvExport";
 import { format } from "date-fns";
@@ -127,12 +128,73 @@ const Savings = () => {
       </div>
 
       {/* Savings Insights & Trends */}
+      {/* Add Savings Form - Moved to Top */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Add Savings</CardTitle>
+          <CardDescription>Record your savings entries</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="amount">Amount (₹)</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  placeholder="Enter amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="source">Source</Label>
+                <Input
+                  id="source"
+                  placeholder="e.g., Salary, Bonus"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description (Optional)</Label>
+              <Textarea
+                id="description"
+                placeholder="Additional details"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="goal">Add to Savings Goal (Optional)</Label>
+              <Select value={selectedGoalId} onValueChange={setSelectedGoalId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a goal" />
+                </SelectTrigger>
+                <SelectContent>
+                  {goals.map((goal) => (
+                    <SelectItem key={goal.id} value={goal.id}>
+                      {goal.goal_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" className="w-full">
+              Add Savings
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
       <div className="mb-6">
         <SavingsInsightsSection />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Add Savings Form */}
+        {/* Savings History - Now First Column */}
         <Card>
           <CardHeader>
             <CardTitle>Add Savings</CardTitle>
@@ -193,6 +255,41 @@ const Savings = () => {
         {/* Savings History */}
         <Card>
           <CardHeader>
+            <CardTitle>Recent Savings Goals</CardTitle>
+            <CardDescription>Track your savings goals progress</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {goals.length === 0 ? (
+              <p className="text-center text-sm text-muted-foreground py-4">
+                No savings goals yet. Add one above!
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {goals.slice(0, 3).map((goal) => {
+                  const progress = goal.target_amount > 0 
+                    ? ((goal.current_amount || 0) / goal.target_amount) * 100 
+                    : 0;
+                  return (
+                    <div key={goal.id} className="space-y-2 rounded-lg border p-3">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">{goal.goal_name}</p>
+                        <p className="text-sm font-semibold">{progress.toFixed(0)}%</p>
+                      </div>
+                      <Progress value={progress} className="h-2" />
+                      <p className="text-xs text-muted-foreground">
+                        {formatIndianCurrency(goal.current_amount || 0)} / {formatIndianCurrency(goal.target_amount)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Savings History */}
+        <Card>
+          <CardHeader>
             <CardTitle>Savings History</CardTitle>
             <CardDescription>View all your savings entries</CardDescription>
           </CardHeader>
@@ -204,7 +301,7 @@ const Savings = () => {
                 <p className="text-sm text-muted-foreground">Start tracking your savings today!</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-96 overflow-y-auto">
                 {savings
                   .sort((a, b) => b.date.getTime() - a.date.getTime())
                   .map((entry) => (

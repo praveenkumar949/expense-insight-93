@@ -12,13 +12,22 @@ const PasswordUpdateDialog = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    oldPassword: "",
+    currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.currentPassword) {
+      toast({
+        title: "Error",
+        description: "Please enter your current password",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (formData.newPassword !== formData.confirmPassword) {
       toast({
@@ -41,6 +50,27 @@ const PasswordUpdateDialog = () => {
     setLoading(true);
 
     try {
+      // Verify current password by attempting to sign in
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) {
+        throw new Error("Unable to verify user");
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: formData.currentPassword,
+      });
+
+      if (signInError) {
+        toast({
+          title: "Error",
+          description: "Current password is incorrect",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       // Update password
       const { error } = await supabase.auth.updateUser({
         password: formData.newPassword,
@@ -53,7 +83,7 @@ const PasswordUpdateDialog = () => {
         description: "Your password has been changed successfully",
       });
       setOpen(false);
-      setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error: any) {
       console.error("Error updating password:", error);
       toast({
@@ -78,10 +108,21 @@ const PasswordUpdateDialog = () => {
         <DialogHeader>
           <DialogTitle>Update Password</DialogTitle>
           <DialogDescription>
-            Change your account password
+            Verify your current password before setting a new one
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="current_password">Current Password</Label>
+            <Input
+              id="current_password"
+              type="password"
+              value={formData.currentPassword}
+              onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
+              placeholder="Enter current password"
+              required
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="new_password">New Password</Label>
             <Input

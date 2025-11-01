@@ -44,6 +44,28 @@ const Dashboard = () => {
         />
       </div>
 
+      {/* Investment Disclaimer */}
+      <Card className="mb-6 border-amber-500/50 bg-amber-500/5">
+        <CardContent className="pt-6">
+          <div className="flex gap-3">
+            <div className="flex-shrink-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10">
+                <span className="text-lg">⚠️</span>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100">Investment Disclaimer</h3>
+              <p className="mt-1 text-sm text-amber-800 dark:text-amber-200">
+                All financial insights, recommendations, and information provided on this platform are for informational and educational purposes only. 
+                They do not constitute financial advice, investment recommendations, or an offer to buy or sell any securities. 
+                Please consult with a certified financial advisor before making any investment decisions. 
+                Past performance does not guarantee future results, and all investments carry risk.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Total Spending Card */}
       <Card className="mb-6">
         <CardHeader>
