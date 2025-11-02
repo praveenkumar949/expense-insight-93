@@ -20,9 +20,7 @@ const Navigation = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <Wallet className="h-6 w-6 text-primary-foreground" />
-          </div>
+          <img src="/logo.jpg" alt="FinGuide Logo" className="h-10 w-10 rounded-lg object-cover" />
           <span className="text-lg font-bold sm:text-xl">FinGuide</span>
         </Link>
 

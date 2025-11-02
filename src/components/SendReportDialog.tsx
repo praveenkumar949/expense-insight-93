@@ -30,6 +30,7 @@ const SendReportDialog = ({ open, onOpenChange }: SendReportDialogProps) => {
   const { expenses, getMonthlyData, availableMonths } = useExpenses();
   const { toast } = useToast();
   const [selectedMonth, setSelectedMonth] = useState<string>(availableMonths[0] || "");
+  const [exportFormat, setExportFormat] = useState<"csv" | "pdf" | "docx">("csv");
   const [sending, setSending] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -56,6 +57,7 @@ const SendReportDialog = ({ open, onOpenChange }: SendReportDialogProps) => {
           month: monthName,
           year: year,
           email: profile.email,
+          format: exportFormat,
           expenses: monthExpenses.map((exp) => ({
             date: exp.date,
             category: exp.category,
@@ -74,7 +76,7 @@ const SendReportDialog = ({ open, onOpenChange }: SendReportDialogProps) => {
 
       toast({
         title: "Report Sent Successfully",
-        description: `Expense report for ${monthName} ${year} has been sent to ${profile.email}`,
+        description: `Expense report (${exportFormat.toUpperCase()}) for ${monthName} ${year} has been sent to ${profile.email}`,
       });
       setShowConfirm(false);
       onOpenChange(false);
@@ -120,13 +122,27 @@ const SendReportDialog = ({ open, onOpenChange }: SendReportDialogProps) => {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="report-format">Export Format</Label>
+              <Select value={exportFormat} onValueChange={(value: any) => setExportFormat(value)}>
+                <SelectTrigger id="report-format">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="csv">CSV</SelectItem>
+                  <SelectItem value="pdf">PDF</SelectItem>
+                  <SelectItem value="docx">DOCX</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="rounded-lg border bg-muted p-4">
               <div className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4" />
                 <span>Report will be sent to: {profile?.email}</span>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                The report includes a summary and CSV file with all expenses
+                The report includes a summary and {exportFormat.toUpperCase()} file with all expenses
               </p>
             </div>
 

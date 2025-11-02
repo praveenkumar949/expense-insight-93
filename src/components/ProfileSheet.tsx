@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { User, Settings, Download, LogOut, Mail, Bug, Lock, Moon, Sun, FileText, Trash2, UserPlus } from "lucide-react";
+import { User, Settings, Download, LogOut, Mail, Bug, Lock, Moon, Sun, FileText, Trash2, UserPlus, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useTheme } from "next-themes";
@@ -28,6 +28,7 @@ import CreatorInfoDialog from "./CreatorInfoDialog";
 import TermsDialog from "./TermsDialog";
 import SendReportDialog from "./SendReportDialog";
 import SwitchAccountDialog from "./SwitchAccountDialog";
+import BookAppointmentDialog from "./BookAppointmentDialog";
 
 const ProfileSheet = () => {
   const { user, signOut } = useAuth();
@@ -41,6 +42,7 @@ const ProfileSheet = () => {
   const [showReportSettings, setShowReportSettings] = useState(false);
   const [showSwitchAccount, setShowSwitchAccount] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showBookAppointment, setShowBookAppointment] = useState(false);
 
   if (!user) return null;
 
@@ -126,6 +128,14 @@ const ProfileSheet = () => {
                 Reports Management
               </h4>
               <div className="space-y-2">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => setShowBookAppointment(true)}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Book Appointment
+                </Button>
                 <Button
                   variant="outline"
                   className="w-full justify-start"
@@ -253,6 +263,7 @@ const ProfileSheet = () => {
       <SendReportDialog open={showSendReport} onOpenChange={setShowSendReport} />
       <ReportSettingsDialog open={showReportSettings} onOpenChange={setShowReportSettings} />
       <SwitchAccountDialog open={showSwitchAccount} onOpenChange={setShowSwitchAccount} />
+      <BookAppointmentDialog open={showBookAppointment} onOpenChange={setShowBookAppointment} />
       
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>

@@ -66,14 +66,14 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Market Analysis */}
-      <div className="mb-6">
-        <MarketAnalysis />
-      </div>
-
       {/* Savings Insights */}
       <div className="mb-6">
         <SavingsInsightsSection />
+      </div>
+
+      {/* Market Analysis */}
+      <div className="mb-6">
+        <MarketAnalysis />
       </div>
 
       {/* Total Spending Card */}

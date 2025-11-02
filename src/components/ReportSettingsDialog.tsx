@@ -19,6 +19,7 @@ const ReportSettingsDialog = ({ open, onOpenChange }: ReportSettingsDialogProps)
   const { toast } = useToast();
   const [isEnabled, setIsEnabled] = useState(profile?.monthly_report_enabled ?? false);
   const [frequency, setFrequency] = useState(profile?.report_frequency ?? "monthly");
+  const [exportFormat, setExportFormat] = useState<"csv" | "pdf" | "docx">("csv");
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -77,23 +78,40 @@ const ReportSettingsDialog = ({ open, onOpenChange }: ReportSettingsDialogProps)
           </div>
 
           {isEnabled && (
-            <div className="space-y-2">
-              <Label htmlFor="frequency">Report Frequency</Label>
-              <Select value={frequency} onValueChange={setFrequency}>
-                <SelectTrigger id="frequency">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="quarterly">Quarterly (3 months)</SelectItem>
-                  <SelectItem value="semi-annual">Semi-Annual (6 months)</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
-                </SelectContent>
-              </Select>
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="frequency">Report Frequency</Label>
+                <Select value={frequency} onValueChange={setFrequency}>
+                  <SelectTrigger id="frequency">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="quarterly">Quarterly (3 months)</SelectItem>
+                    <SelectItem value="semi-annual">Semi-Annual (6 months)</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="report-format">Report Format</Label>
+                <Select value={exportFormat} onValueChange={(value: any) => setExportFormat(value)}>
+                  <SelectTrigger id="report-format">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="csv">CSV</SelectItem>
+                    <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="docx">DOCX</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <p className="text-sm text-muted-foreground">
-                Reports will be sent to: {profile?.email}
+                {exportFormat.toUpperCase()} reports will be sent to: {profile?.email}
               </p>
-            </div>
+            </>
           )}
 
           <Button onClick={handleSave} disabled={saving} className="w-full">

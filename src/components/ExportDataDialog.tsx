@@ -1,57 +1,75 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Download } from "lucide-react";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useSavings } from "@/hooks/useSavings";
 import { useToast } from "@/hooks/use-toast";
-import { formatIndianCurrency } from "@/lib/csvExport";
+import { exportToPDF, exportToDOCX } from "@/lib/exportUtils";
 
 const ExportDataDialog = () => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [format, setFormat] = useState<"csv" | "pdf" | "docx">("csv");
   const { expenses } = useExpenses();
   const { savings } = useSavings();
 
   const exportAllData = () => {
     try {
-      // Prepare expenses data
-      const expensesCSV = [
-        ["Date", "Category", "Amount"],
-        ...expenses.map(exp => [
-          new Date(exp.date).toLocaleDateString(),
-          exp.category,
-          exp.amount
-        ])
-      ].map(row => row.join(",")).join("\n");
+      const allData = [
+        ...expenses.map(exp => ({
+          date: exp.date,
+          category: exp.category,
+          subCategory: exp.subCategory,
+          merchant: exp.merchant,
+          amount: exp.amount,
+          source: "Expense"
+        })),
+        ...savings.map(sav => ({
+          date: sav.date,
+          category: "Savings",
+          subCategory: sav.source,
+          merchant: "",
+          amount: sav.amount,
+          description: sav.description || "",
+          source: "Savings"
+        }))
+      ];
 
-      // Prepare savings data
-      const savingsCSV = [
-        ["Date", "Amount", "Source", "Description"],
-        ...savings.map(sav => [
-          new Date(sav.date).toLocaleDateString(),
-          sav.amount,
-          sav.source,
-          sav.description || ""
-        ])
-      ].map(row => row.join(",")).join("\n");
+      const timestamp = new Date().toISOString().split("T")[0];
 
-      // Create combined export
-      const combinedData = `EXPENSES DATA\n${expensesCSV}\n\n\nSAVINGS DATA\n${savingsCSV}`;
-      
-      const blob = new Blob([combinedData], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `finguide-all-data-${new Date().toISOString().split("T")[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      if (format === "csv") {
+        const csvHeader = ["Date", "Category", "Sub Category", "Merchant", "Amount", "Source"];
+        const csvRows = allData.map(item => [
+          new Date(item.date).toLocaleDateString(),
+          item.category,
+          item.subCategory,
+          item.merchant,
+          item.amount,
+          item.source
+        ]);
+        const csvContent = [csvHeader, ...csvRows].map(row => row.join(",")).join("\n");
+        
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `finguide-all-data-${timestamp}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } else if (format === "pdf") {
+        exportToPDF(allData, `finguide-all-data-${timestamp}.pdf`, "FinGuide - All Data Export");
+      } else if (format === "docx") {
+        exportToDOCX(allData, `finguide-all-data-${timestamp}.doc`, "FinGuide - All Data Export");
+      }
 
       toast({
         title: "Export Successful",
-        description: "All data has been exported",
+        description: `All data has been exported as ${format.toUpperCase()}`,
       });
       setOpen(false);
     } catch (error) {
@@ -80,6 +98,20 @@ const ExportDataDialog = () => {
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="export-format">Export Format</Label>
+            <Select value={format} onValueChange={(value: any) => setFormat(value)}>
+              <SelectTrigger id="export-format">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="csv">CSV</SelectItem>
+                <SelectItem value="pdf">PDF</SelectItem>
+                <SelectItem value="docx">DOCX</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <p className="text-sm text-muted-foreground">
             This will export:
           </p>
@@ -89,7 +121,7 @@ const ExportDataDialog = () => {
           </ul>
           <Button onClick={exportAllData} className="w-full">
             <Download className="mr-2 h-4 w-4" />
-            Download CSV
+            Download {format.toUpperCase()}
           </Button>
         </div>
       </DialogContent>

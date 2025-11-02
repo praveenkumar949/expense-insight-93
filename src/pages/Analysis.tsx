@@ -7,18 +7,17 @@ import ComparisonBarChart from "@/components/charts/ComparisonBarChart";
 import { format, parse, subMonths } from "date-fns";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Mail, Settings } from "lucide-react";
-import { exportToCSV, formatIndianCurrency } from "@/lib/csvExport";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Download, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { formatIndianCurrency } from "@/lib/csvExport";
+import { exportToPDF, exportToDOCX } from "@/lib/exportUtils";
 import { useToast } from "@/hooks/use-toast";
-import SendReportDialog from "@/components/SendReportDialog";
-import ReportSettingsDialog from "@/components/ReportSettingsDialog";
 
 const Analysis = () => {
   const { selectedMonth, setSelectedMonth, currentMonthData, getMonthlyData, availableMonths, expenses } =
     useExpenses();
   const { toast } = useToast();
-  const [showSendReport, setShowSendReport] = useState(false);
-  const [showReportSettings, setShowReportSettings] = useState(false);
+  const [exportFormat, setExportFormat] = useState<"csv" | "pdf" | "docx">("csv");
 
   // Comparison month selectors
   const [comparisonMonth1, setComparisonMonth1] = useState<string>(selectedMonth);
@@ -55,11 +54,53 @@ const Analysis = () => {
       return;
     }
 
-    exportToCSV(expenses, `all-expenses-${format(new Date(), "yyyy-MM-dd")}.csv`);
-    toast({
-      title: "Export Successful",
-      description: "All expenses have been exported to CSV",
-    });
+    const timestamp = format(new Date(), "yyyy-MM-dd");
+    const exportData = expenses.map(exp => ({
+      date: exp.date,
+      category: exp.category,
+      subCategory: exp.subCategory,
+      merchant: exp.merchant,
+      amount: exp.amount,
+    }));
+
+    try {
+      if (exportFormat === "csv") {
+        const csvHeader = ["Date", "Category", "Sub Category", "Merchant", "Amount"];
+        const csvRows = exportData.map(item => [
+          new Date(item.date).toLocaleDateString(),
+          item.category,
+          item.subCategory,
+          item.merchant,
+          item.amount
+        ]);
+        const csvContent = [csvHeader, ...csvRows].map(row => row.join(",")).join("\n");
+        
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `all-expenses-${timestamp}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } else if (exportFormat === "pdf") {
+        exportToPDF(exportData, `all-expenses-${timestamp}.pdf`, "All Expenses Report");
+      } else if (exportFormat === "docx") {
+        exportToDOCX(exportData, `all-expenses-${timestamp}.doc`, "All Expenses Report");
+      }
+
+      toast({
+        title: "Export Successful",
+        description: `All expenses have been exported as ${exportFormat.toUpperCase()}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export expenses",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -70,14 +111,16 @@ const Analysis = () => {
           <p className="text-muted-foreground">Deep dive into your spending patterns</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Button onClick={() => setShowSendReport(true)} variant="outline" size="sm">
-            <Mail className="mr-2 h-4 w-4" />
-            Email Report
-          </Button>
-          <Button onClick={() => setShowReportSettings(true)} variant="outline" size="sm">
-            <Settings className="mr-2 h-4 w-4" />
-            Auto Reports
-          </Button>
+          <Select value={exportFormat} onValueChange={(value: any) => setExportFormat(value)}>
+            <SelectTrigger className="w-[100px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="csv">CSV</SelectItem>
+              <SelectItem value="pdf">PDF</SelectItem>
+              <SelectItem value="docx">DOCX</SelectItem>
+            </SelectContent>
+          </Select>
           <Button onClick={handleExportAll} variant="outline" size="sm">
             <Download className="mr-2 h-4 w-4" />
             Export All
@@ -255,8 +298,6 @@ const Analysis = () => {
         </Card>
       </div>
 
-      <SendReportDialog open={showSendReport} onOpenChange={setShowSendReport} />
-      <ReportSettingsDialog open={showReportSettings} onOpenChange={setShowReportSettings} />
     </div>
   );
 };
