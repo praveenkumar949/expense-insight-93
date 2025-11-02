@@ -5,11 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { FileText, Pencil } from "lucide-react";
 import type { FinNote } from "@/pages/FinNote";
+import DrawingCanvas from "../DrawingCanvas";
 
 interface NoteDialogProps {
   open: boolean;
@@ -35,6 +38,8 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"text" | "draw">("text");
+  const [drawingData, setDrawingData] = useState<string>("");
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -46,10 +51,19 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
     if (editingNote) {
       setFormData({
         title: editingNote.title,
-        content: editingNote.content,
+        content: editingNote.content.startsWith("data:image") ? "" : editingNote.content,
         category: editingNote.category || "",
         color: editingNote.color,
       });
+      
+      // Check if content is a drawing
+      if (editingNote.content.startsWith("data:image")) {
+        setActiveTab("draw");
+        setDrawingData(editingNote.content);
+      } else {
+        setActiveTab("text");
+        setDrawingData("");
+      }
     } else {
       setFormData({
         title: "",
@@ -57,15 +71,24 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
         category: "",
         color: "#ffffff",
       });
+      setActiveTab("text");
+      setDrawingData("");
     }
   }, [editingNote, open]);
 
+  const handleDrawingSave = (dataUrl: string) => {
+    setDrawingData(dataUrl);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.content.trim()) {
+    
+    const finalContent = activeTab === "draw" ? drawingData : formData.content;
+    
+    if (!formData.title.trim() || !finalContent.trim()) {
       toast({
         title: "Missing Information",
-        description: "Please provide both title and content",
+        description: activeTab === "draw" ? "Please provide a title and create a drawing" : "Please provide both title and content",
         variant: "destructive",
       });
       return;
@@ -79,7 +102,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
           .from("finnotes")
           .update({
             title: formData.title,
-            content: formData.content,
+            content: finalContent,
             category: formData.category || null,
             color: formData.color,
           })
@@ -91,7 +114,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
         const { error } = await supabase.from("finnotes").insert({
           user_id: user?.id,
           title: formData.title,
-          content: formData.content,
+          content: finalContent,
           category: formData.category || null,
           color: formData.color,
         });
@@ -115,7 +138,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editingNote ? "Edit Note" : "Create New Note"}</DialogTitle>
         </DialogHeader>
@@ -130,16 +153,33 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              placeholder="Write your note here..."
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              rows={8}
-            />
-          </div>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "text" | "draw")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="text">
+                <FileText className="mr-2 h-4 w-4" />
+                Text Note
+              </TabsTrigger>
+              <TabsTrigger value="draw">
+                <Pencil className="mr-2 h-4 w-4" />
+                Draw Note
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="text" className="space-y-2">
+              <Label htmlFor="content">Content</Label>
+              <Textarea
+                id="content"
+                placeholder="Write your note here..."
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                rows={8}
+              />
+            </TabsContent>
+            
+            <TabsContent value="draw">
+              <DrawingCanvas onSave={handleDrawingSave} initialDrawing={drawingData} />
+            </TabsContent>
+          </Tabs>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

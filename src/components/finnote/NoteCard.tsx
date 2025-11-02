@@ -87,9 +87,18 @@ const NoteCard = ({ note, onEdit }: NoteCardProps) => {
         )}
         
         <h3 className="font-semibold text-lg mb-2 line-clamp-2">{note.title}</h3>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-4 whitespace-pre-wrap">
-          {note.content}
-        </p>
+        
+        {note.content.startsWith("data:image") ? (
+          <img 
+            src={note.content} 
+            alt="Drawing" 
+            className="w-full rounded-md border mb-3 max-h-48 object-contain bg-white" 
+          />
+        ) : (
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-4 whitespace-pre-wrap">
+            {note.content}
+          </p>
+        )}
 
         {note.category && (
           <span className="inline-block px-2 py-1 text-xs bg-primary/10 text-primary rounded-full mb-3">

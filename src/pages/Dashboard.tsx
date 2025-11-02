@@ -5,9 +5,11 @@ import MonthSelector from "@/components/MonthSelector";
 import CategoryPieChart from "@/components/charts/CategoryPieChart";
 import CategoryBarChart from "@/components/charts/CategoryBarChart";
 import FinancialNewsSection from "@/components/FinancialNewsSection";
-import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
+import { ArrowDown, ArrowUp, TrendingUp, AlertTriangle } from "lucide-react";
 import { format, parse, subMonths } from "date-fns";
 import { formatIndianCurrency } from "@/lib/csvExport";
+import SavingsInsightsSection from "@/components/SavingsInsightsSection";
+import MarketAnalysis from "@/components/MarketAnalysis";
 
 const Dashboard = () => {
   const { selectedMonth, setSelectedMonth, currentMonthData, getMonthlyData, availableMonths } =
@@ -49,9 +51,7 @@ const Dashboard = () => {
         <CardContent className="pt-6">
           <div className="flex gap-3">
             <div className="flex-shrink-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10">
-                <span className="text-lg">⚠️</span>
-              </div>
+              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
               <h3 className="font-semibold text-amber-900 dark:text-amber-100">Investment Disclaimer</h3>
@@ -65,6 +65,16 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Market Analysis */}
+      <div className="mb-6">
+        <MarketAnalysis />
+      </div>
+
+      {/* Savings Insights */}
+      <div className="mb-6">
+        <SavingsInsightsSection />
+      </div>
 
       {/* Total Spending Card */}
       <Card className="mb-6">

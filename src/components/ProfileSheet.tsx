@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { User, Settings, Download, LogOut, Mail, Bug, Lock, Moon, Sun, FileText, Trash2 } from "lucide-react";
+import { User, Settings, Download, LogOut, Mail, Bug, Lock, Moon, Sun, FileText, Trash2, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useTheme } from "next-themes";
@@ -27,6 +27,7 @@ import ExportDataDialog from "./ExportDataDialog";
 import CreatorInfoDialog from "./CreatorInfoDialog";
 import TermsDialog from "./TermsDialog";
 import SendReportDialog from "./SendReportDialog";
+import SwitchAccountDialog from "./SwitchAccountDialog";
 
 const ProfileSheet = () => {
   const { user, signOut } = useAuth();
@@ -38,6 +39,7 @@ const ProfileSheet = () => {
   const [showTerms, setShowTerms] = useState(false);
   const [showSendReport, setShowSendReport] = useState(false);
   const [showReportSettings, setShowReportSettings] = useState(false);
+  const [showSwitchAccount, setShowSwitchAccount] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   if (!user) return null;
@@ -212,6 +214,14 @@ const ProfileSheet = () => {
               <h4 className="font-semibold text-destructive">Danger Zone</h4>
               <Button
                 variant="outline"
+                className="w-full justify-start"
+                onClick={() => setShowSwitchAccount(true)}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Switch Account
+              </Button>
+              <Button
+                variant="outline"
                 className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={() => setShowDeleteConfirm(true)}
               >
@@ -242,6 +252,7 @@ const ProfileSheet = () => {
       <TermsDialog open={showTerms} onOpenChange={setShowTerms} />
       <SendReportDialog open={showSendReport} onOpenChange={setShowSendReport} />
       <ReportSettingsDialog open={showReportSettings} onOpenChange={setShowReportSettings} />
+      <SwitchAccountDialog open={showSwitchAccount} onOpenChange={setShowSwitchAccount} />
       
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>

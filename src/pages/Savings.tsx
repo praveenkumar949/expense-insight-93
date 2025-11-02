@@ -194,65 +194,7 @@ const Savings = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Savings History - Now First Column */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Add Savings</CardTitle>
-            <CardDescription>Record your savings entries</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="amount">Amount (₹)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  placeholder="Enter amount"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="source">Source</Label>
-                <Input
-                  id="source"
-                  placeholder="e.g., Salary, Bonus, Investment Returns"
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Additional details about this savings"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="goal">Add to Savings Goal (Optional)</Label>
-                <Select value={selectedGoalId} onValueChange={setSelectedGoalId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a goal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {goals.map((goal) => (
-                      <SelectItem key={goal.id} value={goal.id}>
-                        {goal.goal_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit" className="w-full">
-                Add Savings
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Savings History */}
+        {/* Recent Savings Goals */}
         <Card>
           <CardHeader>
             <CardTitle>Recent Savings Goals</CardTitle>
