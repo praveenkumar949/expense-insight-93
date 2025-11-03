@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { FileText, Pencil, Paperclip, X } from "lucide-react";
+import { FileText, Pencil, Paperclip, X, Save } from "lucide-react";
 import type { FinNote } from "@/pages/FinNote";
 import DrawingCanvas from "../DrawingCanvas";
 
@@ -42,12 +42,56 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
   const [drawingData, setDrawingData] = useState<string>("");
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [attachmentUrl, setAttachmentUrl] = useState<string>("");
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout>();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     category: "",
     color: "#ffffff",
   });
+
+  // Auto-save functionality
+  const autoSave = useCallback(async () => {
+    if (!editingNote || !user) return;
+    
+    const finalContent = activeTab === "draw" ? drawingData : formData.content;
+    if (!formData.title.trim() || !finalContent.trim()) return;
+
+    setAutoSaving(true);
+    try {
+      const { error } = await supabase
+        .from("finnotes")
+        .update({
+          title: formData.title,
+          content: finalContent,
+          category: formData.category || null,
+          color: formData.color,
+        })
+        .eq("id", editingNote.id);
+
+      if (!error) {
+        setLastSaved(new Date());
+      }
+    } catch (error) {
+      console.error("Auto-save failed:", error);
+    } finally {
+      setAutoSaving(false);
+    }
+  }, [editingNote, user, formData, activeTab, drawingData]);
+
+  // Trigger auto-save on content change
+  useEffect(() => {
+    if (editingNote && open) {
+      clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = setTimeout(() => {
+        autoSave();
+      }, 2000); // Auto-save after 2 seconds of inactivity
+    }
+    
+    return () => clearTimeout(autoSaveTimerRef.current);
+  }, [formData, drawingData, activeTab, autoSave, editingNote, open]);
 
   useEffect(() => {
     if (editingNote) {
@@ -70,6 +114,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
       // Set attachment URL if exists
       setAttachmentUrl((editingNote as any).attachment_url || "");
       setAttachmentFile(null);
+      setLastSaved(null);
     } else {
       setFormData({
         title: "",
@@ -81,6 +126,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
       setDrawingData("");
       setAttachmentUrl("");
       setAttachmentFile(null);
+      setLastSaved(null);
     }
   }, [editingNote, open]);
 
@@ -192,7 +238,24 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{editingNote ? "Edit Note" : "Create New Note"}</DialogTitle>
+          <DialogTitle className="flex items-center justify-between">
+            <span>{editingNote ? "Edit Note" : "Create New Note"}</span>
+            {editingNote && (
+              <span className="text-xs font-normal text-muted-foreground">
+                {autoSaving ? (
+                  <span className="flex items-center gap-1">
+                    <Save className="h-3 w-3 animate-pulse" />
+                    Auto-saving...
+                  </span>
+                ) : lastSaved ? (
+                  <span className="flex items-center gap-1">
+                    <Save className="h-3 w-3" />
+                    Saved {lastSaved.toLocaleTimeString()}
+                  </span>
+                ) : null}
+              </span>
+            )}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">

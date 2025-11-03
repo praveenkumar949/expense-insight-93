@@ -2,12 +2,20 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, FileText } from "lucide-react";
+import { Plus, Search, FileText, Download } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import NoteCard from "@/components/finnote/NoteCard";
 import NoteDialog from "@/components/finnote/NoteDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportNotesToPDF, exportNotesToCSV, exportNotesToDOCX } from "@/lib/noteExport";
 
 export interface FinNote {
   id: string;
@@ -23,6 +31,7 @@ export interface FinNote {
 
 const FinNote = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -63,6 +72,51 @@ const FinNote = () => {
     setEditingNote(null);
   };
 
+  const handleExport = (format: 'pdf' | 'csv' | 'docx') => {
+    if (notes.length === 0) {
+      toast({
+        title: "No Notes",
+        description: "You don't have any notes to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const filename = `finnotes-${new Date().toISOString().split('T')[0]}`;
+    const exportData = notes.map(note => ({
+      title: note.title,
+      content: note.content,
+      category: note.category,
+      created_at: note.created_at,
+      updated_at: note.updated_at,
+    }));
+
+    try {
+      switch (format) {
+        case 'pdf':
+          exportNotesToPDF(exportData, `${filename}.pdf`);
+          break;
+        case 'csv':
+          exportNotesToCSV(exportData, `${filename}.csv`);
+          break;
+        case 'docx':
+          exportNotesToDOCX(exportData, `${filename}.doc`);
+          break;
+      }
+      
+      toast({
+        title: "Export Successful",
+        description: `Your notes have been exported as ${format.toUpperCase()}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting your notes",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="container px-4 py-8">
       <div className="mb-6">
@@ -83,10 +137,31 @@ const FinNote = () => {
                 className="pl-9"
               />
             </div>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Note
-            </Button>
+            <div className="flex gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => handleExport('csv')}>
+                    Export as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                    Export as PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('docx')}>
+                    Export as DOCX
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button onClick={() => setDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Note
+              </Button>
+            </div>
           </div>
 
           {/* Category Filters */}

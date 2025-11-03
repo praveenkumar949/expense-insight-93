@@ -69,7 +69,7 @@ const Calculators = () => {
               <TabsTrigger
                 key={calc.value}
                 value={calc.value}
-                className="flex items-center gap-2 transition-all hover:scale-105"
+                className="flex items-center gap-2 transition-all hover:scale-105 hover:shadow-md data-[state=active]:shadow-lg"
               >
                 <Icon className="h-4 w-4" />
                 <span className="hidden xl:inline">{calc.label}</span>

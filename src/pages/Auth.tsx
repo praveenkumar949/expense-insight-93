@@ -43,18 +43,50 @@ const Auth = () => {
       });
       return;
     }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate password strength
+    if (formData.password.length < 6) {
+      toast({
+        title: "Weak Password",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate name
+    if (formData.full_name.trim().length < 2) {
+      toast({
+        title: "Invalid Name",
+        description: "Please enter your full name",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setLoading(true);
 
     try {
       const { error } = await supabase.auth.signUp({
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password,
         options: {
           data: {
-            full_name: formData.full_name,
-            phone_number: formData.phone_number,
+            full_name: formData.full_name.trim(),
+            phone_number: formData.phone_number.trim(),
           },
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
 

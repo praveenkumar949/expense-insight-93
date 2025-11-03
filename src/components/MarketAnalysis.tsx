@@ -68,7 +68,7 @@ const MarketAnalysis = () => {
                 href={item.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent/50 transition-colors cursor-pointer group"
+                className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent hover:border-primary/50 transition-all duration-200 cursor-pointer group"
               >
                 <div className="flex-1">
                   <p className="text-sm font-semibold group-hover:text-primary transition-colors">{item.name}</p>

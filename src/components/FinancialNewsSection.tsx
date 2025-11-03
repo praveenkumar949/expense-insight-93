@@ -72,7 +72,7 @@ const FinancialNewsSection = () => {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start justify-between gap-3 p-3 rounded-lg border hover:bg-accent/50 dark:hover:bg-accent transition-colors group"
+                className="flex items-start justify-between gap-3 p-3 rounded-lg border hover:bg-accent hover:border-primary/50 transition-all duration-200 group"
               >
                 <div className="flex-1">
                   <h4 className="font-medium text-sm group-hover:text-primary transition-colors">
