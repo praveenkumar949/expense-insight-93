@@ -3,15 +3,26 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Download, TrendingUp } from "lucide-react";
 import { useSavings } from "@/hooks/useSavings";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { formatIndianCurrency } from "@/lib/csvExport";
 import { useToast } from "@/hooks/use-toast";
 
-const SavingsInsightsSection = () => {
+interface SavingsInsightsSectionProps {
+  selectedMonth: string;
+}
+
+const SavingsInsightsSection = ({ selectedMonth }: SavingsInsightsSectionProps) => {
   const { savings } = useSavings();
   const { toast } = useToast();
 
-  // Process savings data by month
+  // Filter savings for selected month and calculate data
+  const selectedDate = parse(selectedMonth, "yyyy-MM", new Date());
+  const filteredSavings = savings.filter(entry => {
+    const entryMonth = format(entry.date, "yyyy-MM");
+    return entryMonth === selectedMonth;
+  });
+
+  // Process savings data by month (last 6 months)
   const monthlySavings = savings.reduce((acc, entry) => {
     const monthKey = format(entry.date, "MMM yyyy");
     acc[monthKey] = (acc[monthKey] || 0) + entry.amount;

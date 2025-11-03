@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { FileText, Pencil } from "lucide-react";
+import { FileText, Pencil, Paperclip, X } from "lucide-react";
 import type { FinNote } from "@/pages/FinNote";
 import DrawingCanvas from "../DrawingCanvas";
 
@@ -40,6 +40,8 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"text" | "draw">("text");
   const [drawingData, setDrawingData] = useState<string>("");
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
+  const [attachmentUrl, setAttachmentUrl] = useState<string>("");
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -64,6 +66,10 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
         setActiveTab("text");
         setDrawingData("");
       }
+      
+      // Set attachment URL if exists
+      setAttachmentUrl((editingNote as any).attachment_url || "");
+      setAttachmentFile(null);
     } else {
       setFormData({
         title: "",
@@ -73,11 +79,35 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
       });
       setActiveTab("text");
       setDrawingData("");
+      setAttachmentUrl("");
+      setAttachmentFile(null);
     }
   }, [editingNote, open]);
 
   const handleDrawingSave = (dataUrl: string) => {
     setDrawingData(dataUrl);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select a file smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAttachmentFile(file);
+  };
+
+  const removeAttachment = () => {
+    setAttachmentFile(null);
+    setAttachmentUrl("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,6 +127,26 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
     setLoading(true);
 
     try {
+      let uploadedAttachmentUrl = attachmentUrl;
+
+      // Upload attachment if a new file is selected
+      if (attachmentFile && user) {
+        const fileExt = attachmentFile.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('finnote-attachments')
+          .upload(fileName, attachmentFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('finnote-attachments')
+          .getPublicUrl(fileName);
+
+        uploadedAttachmentUrl = fileName; // Store path, not full URL
+      }
+
       if (editingNote) {
         const { error } = await supabase
           .from("finnotes")
@@ -105,6 +155,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
             content: finalContent,
             category: formData.category || null,
             color: formData.color,
+            attachment_url: uploadedAttachmentUrl || null,
           })
           .eq("id", editingNote.id);
 
@@ -117,6 +168,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
           content: finalContent,
           category: formData.category || null,
           color: formData.color,
+          attachment_url: uploadedAttachmentUrl || null,
         });
 
         if (error) throw error;
@@ -219,6 +271,45 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          {/* File Attachment */}
+          <div className="space-y-2">
+            <Label htmlFor="attachment">Attachment (Optional)</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="attachment"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                onChange={handleFileChange}
+                className="flex-1"
+              />
+              {(attachmentFile || attachmentUrl) && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={removeAttachment}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            {attachmentFile && (
+              <p className="text-xs text-muted-foreground">
+                <Paperclip className="inline h-3 w-3 mr-1" />
+                {attachmentFile.name} ({(attachmentFile.size / 1024).toFixed(1)} KB)
+              </p>
+            )}
+            {attachmentUrl && !attachmentFile && (
+              <p className="text-xs text-muted-foreground">
+                <Paperclip className="inline h-3 w-3 mr-1" />
+                Attachment saved
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Supported: PDF, JPG, PNG, WEBP, DOC, DOCX (Max 5MB)
+            </p>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">

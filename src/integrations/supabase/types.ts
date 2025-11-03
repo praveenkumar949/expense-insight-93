@@ -46,6 +46,7 @@ export type Database = {
       }
       finnotes: {
         Row: {
+          attachment_url: string | null
           category: string | null
           color: string | null
           content: string
@@ -57,6 +58,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attachment_url?: string | null
           category?: string | null
           color?: string | null
           content: string
@@ -68,6 +70,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          attachment_url?: string | null
           category?: string | null
           color?: string | null
           content?: string

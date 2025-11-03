@@ -17,7 +17,7 @@ const FinChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm Fin, your financial assistant. How can I help you today?",
+      content: "Hi! I'm FinBot, your financial assistant. How can I help you today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -31,7 +31,7 @@ const FinChatbot = () => {
       setMessages([
         {
           role: "assistant",
-          content: "Hi! I'm Fin, your financial assistant. How can I help you today?",
+          content: "Hi! I'm FinBot, your financial assistant. How can I help you today?",
         },
       ]);
     }
@@ -127,7 +127,7 @@ const FinChatbot = () => {
       console.error("Chatbot error:", error);
       toast({
         title: "Error",
-        description: "Failed to get response from Fin",
+        description: "Failed to get response from FinBot",
         variant: "destructive",
       });
       
@@ -151,12 +151,12 @@ const FinChatbot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 w-96 h-[600px] flex flex-col shadow-2xl z-50">
+        <Card className="fixed bottom-24 right-6 w-96 h-[600px] flex flex-col shadow-2xl z-50 rounded-2xl overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground">
+          <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground rounded-t-2xl">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
-              <h3 className="font-semibold">Fin - Financial Assistant</h3>
+              <h3 className="font-semibold">FinBot - Financial Assistant</h3>
             </div>
             <Button
               variant="ghost"

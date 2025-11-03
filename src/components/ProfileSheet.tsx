@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { User, Settings, Download, LogOut, Mail, Bug, Lock, Moon, Sun, FileText, Trash2, UserPlus, Calendar } from "lucide-react";
+import { User, Settings, Download, LogOut, Mail, Bug, Lock, FileText, Trash2, UserPlus, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useTheme } from "next-themes";
+import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -177,18 +178,19 @@ const ProfileSheet = () => {
               <div className="space-y-2">
                 <PasswordUpdateDialog />
                 
-                <Button
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                >
-                  {theme === "dark" ? (
-                    <Sun className="mr-2 h-4 w-4" />
-                  ) : (
-                    <Moon className="mr-2 h-4 w-4" />
-                  )}
-                  {theme === "dark" ? "Light Mode" : "Dark Mode"}
-                </Button>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span className="text-sm font-medium">Dark Mode</span>
+                  </div>
+                  <Button
+                    variant={theme === "dark" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  >
+                    {theme === "dark" ? "Disable" : "Enable"}
+                  </Button>
+                </div>
 
                 <BugReportDialog />
                 

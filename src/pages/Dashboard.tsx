@@ -66,15 +66,6 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Savings Insights */}
-      <div className="mb-6">
-        <SavingsInsightsSection />
-      </div>
-
-      {/* Market Analysis */}
-      <div className="mb-6">
-        <MarketAnalysis />
-      </div>
 
       {/* Total Spending Card */}
       <Card className="mb-6">
@@ -128,6 +119,17 @@ const Dashboard = () => {
             <CategoryBarChart data={currentMonthData.categoryTotals} />
           </CardContent>
         </Card>
+      </div>
+
+      {/* Savings Insights */}
+      <div className="mt-6">
+        <SavingsInsightsSection selectedMonth={selectedMonth} />
+      </div>
+
+      {/* Market Analysis & News Side by Side */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <MarketAnalysis />
+        <FinancialNewsSection />
       </div>
 
       {/* Insights */}
@@ -223,10 +225,6 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Financial News */}
-      <div className="mt-6">
-        <FinancialNewsSection />
-      </div>
     </div>
   );
 };

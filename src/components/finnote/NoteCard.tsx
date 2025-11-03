@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pin, Edit, Trash2, Download } from "lucide-react";
+import { Pin, Edit, Trash2, Download, Paperclip, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -76,6 +76,21 @@ const NoteCard = ({ note, onEdit }: NoteCardProps) => {
     });
   };
 
+  const handleViewAttachment = async () => {
+    const attachmentUrl = (note as any).attachment_url;
+    if (!attachmentUrl) return;
+
+    const { data } = supabase.storage
+      .from('finnote-attachments')
+      .getPublicUrl(attachmentUrl);
+
+    if (data?.publicUrl) {
+      window.open(data.publicUrl, '_blank');
+    }
+  };
+
+  const noteAttachmentUrl = (note as any).attachment_url;
+
   return (
     <Card
       className="relative overflow-hidden transition-all hover:shadow-lg"
@@ -104,6 +119,19 @@ const NoteCard = ({ note, onEdit }: NoteCardProps) => {
           <span className="inline-block px-2 py-1 text-xs bg-primary/10 text-primary rounded-full mb-3">
             {note.category}
           </span>
+        )}
+
+        {noteAttachmentUrl && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleViewAttachment}
+            className="w-full mb-3"
+          >
+            <Paperclip className="h-3 w-3 mr-2" />
+            View Attachment
+            <ExternalLink className="h-3 w-3 ml-2" />
+          </Button>
         )}
 
         <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">

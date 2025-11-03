@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import SavingsGoalsSection from "@/components/SavingsGoalsSection";
 import SavingsInsightsSection from "@/components/SavingsInsightsSection";
+import MonthSelector from "@/components/MonthSelector";
 
 const Savings = () => {
   const { savings, addSavings, deleteSavings, totalSavings } = useSavings();
@@ -25,6 +26,12 @@ const Savings = () => {
   const [source, setSource] = useState("");
   const [description, setDescription] = useState("");
   const [selectedGoalId, setSelectedGoalId] = useState<string>("");
+  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "yyyy-MM"));
+  
+  // Get available months from savings data
+  const availableMonths = Array.from(
+    new Set(savings.map((s) => format(s.date, "yyyy-MM")))
+  ).sort((a, b) => b.localeCompare(a));
 
   const { data: goals = [] } = useQuery({
     queryKey: ["savings-goals", user?.id],
@@ -100,9 +107,16 @@ const Savings = () => {
 
   return (
     <div className="container px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold sm:text-3xl">Savings Tracker</h1>
-        <p className="text-muted-foreground">Track all your savings in one place</p>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold sm:text-3xl">Savings Tracker</h1>
+          <p className="text-muted-foreground">Track all your savings in one place</p>
+        </div>
+        <MonthSelector
+          selectedMonth={selectedMonth}
+          onMonthChange={setSelectedMonth}
+          availableMonths={availableMonths}
+        />
       </div>
 
       {/* Total Savings Card */}
@@ -190,7 +204,7 @@ const Savings = () => {
       </Card>
 
       <div className="mb-6">
-        <SavingsInsightsSection />
+        <SavingsInsightsSection selectedMonth={selectedMonth} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
