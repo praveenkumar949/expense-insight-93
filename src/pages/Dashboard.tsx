@@ -126,12 +126,6 @@ const Dashboard = () => {
         <SavingsInsightsSection selectedMonth={selectedMonth} />
       </div>
 
-      {/* Market Analysis & News Side by Side */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <MarketAnalysis />
-        <FinancialNewsSection />
-      </div>
-
       {/* Insights */}
       <div className="mt-6 grid gap-6 md:grid-cols-3">
         <Card>
@@ -224,6 +218,12 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Market Analysis & News at Bottom */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <MarketAnalysis />
+        <FinancialNewsSection />
+      </div>
 
     </div>
   );

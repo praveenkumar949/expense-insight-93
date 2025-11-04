@@ -107,7 +107,7 @@ const FinChatbot = () => {
               if (content) {
                 accumulatedContent += content;
                 
-                // Update the last message with accumulated content
+                // Update the last message with accumulated content and add typing effect
                 setMessages((prev) => {
                   const updated = [...prev];
                   updated[updated.length - 1] = {
@@ -116,6 +116,9 @@ const FinChatbot = () => {
                   };
                   return updated;
                 });
+                
+                // Small delay to create typing effect
+                await new Promise(resolve => setTimeout(resolve, 20));
               }
             } catch (e) {
               // Ignore parse errors for incomplete chunks
