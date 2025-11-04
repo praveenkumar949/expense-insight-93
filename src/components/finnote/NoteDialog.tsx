@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { z } from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,27 @@ const COLORS = [
 ];
 
 const CATEGORIES = ["Budget Ideas", "Investment Tips", "Savings Goals", "Tax Planning", "Debt Management", "Other"];
+
+// Validation schema for notes
+const noteSchema = z.object({
+  title: z.string()
+    .trim()
+    .min(1, 'Title is required')
+    .max(200, 'Title must be less than 200 characters'),
+  content: z.string()
+    .trim()
+    .min(1, 'Content is required')
+    .max(10000, 'Content must be less than 10,000 characters'),
+  category: z.string().optional(),
+  color: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid color format')
+});
+
+// Sanitize filename for safe storage
+const sanitizeFilename = (name: string) => {
+  return name
+    .replace(/[^a-zA-Z0-9.-]/g, '_')
+    .substring(0, 100);
+};
 
 const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
   const { user } = useAuth();
@@ -161,13 +183,23 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
     
     const finalContent = activeTab === "draw" ? drawingData : formData.content;
     
-    if (!formData.title.trim() || !finalContent.trim()) {
-      toast({
-        title: "Missing Information",
-        description: activeTab === "draw" ? "Please provide a title and create a drawing" : "Please provide both title and content",
-        variant: "destructive",
+    // Validate input
+    try {
+      noteSchema.parse({
+        title: formData.title,
+        content: finalContent || editingNote?.content || '',
+        category: formData.category,
+        color: formData.color
       });
-      return;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     setLoading(true);
@@ -177,7 +209,8 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
 
       // Upload attachment if a new file is selected
       if (attachmentFile && user) {
-        const fileExt = attachmentFile.name.split('.').pop();
+        const sanitizedName = sanitizeFilename(attachmentFile.name);
+        const fileExt = sanitizedName.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
         const { error: uploadError } = await supabase.storage
@@ -186,11 +219,8 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('finnote-attachments')
-          .getPublicUrl(fileName);
-
-        uploadedAttachmentUrl = fileName; // Store path, not full URL
+        // Store only the path - signed URLs will be generated on display
+        uploadedAttachmentUrl = fileName;
       }
 
       if (editingNote) {

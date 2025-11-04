@@ -80,12 +80,23 @@ const NoteCard = ({ note, onEdit }: NoteCardProps) => {
     const attachmentUrl = (note as any).attachment_url;
     if (!attachmentUrl) return;
 
-    const { data } = supabase.storage
+    // Generate signed URL for secure temporary access
+    const { data, error } = await supabase.storage
       .from('finnote-attachments')
-      .getPublicUrl(attachmentUrl);
+      .createSignedUrl(attachmentUrl, 3600); // 1 hour expiry
 
-    if (data?.publicUrl) {
-      window.open(data.publicUrl, '_blank');
+    if (error) {
+      console.error('Failed to get signed URL:', error);
+      toast({
+        title: "Error",
+        description: "Failed to access attachment",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (data?.signedUrl) {
+      window.open(data.signedUrl, '_blank');
     }
   };
 

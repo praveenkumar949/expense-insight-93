@@ -50,20 +50,14 @@ const PasswordUpdateDialog = () => {
     setLoading(true);
 
     try {
-      // Verify current password by attempting to sign in
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user?.email) {
-        throw new Error("Unable to verify user");
-      }
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.email,
-        password: formData.currentPassword,
+      // Verify current password using secure edge function
+      const { data, error: verifyError } = await supabase.functions.invoke('verify-password', {
+        body: { password: formData.currentPassword }
       });
 
-      if (signInError) {
+      if (verifyError || !data?.valid) {
         toast({
-          title: "Error",
+          title: "Verification Failed",
           description: "Current password is incorrect",
           variant: "destructive",
         });

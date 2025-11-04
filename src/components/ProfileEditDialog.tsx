@@ -91,16 +91,15 @@ const ProfileEditDialog = () => {
     setLoading(true);
 
     try {
-      // Verify password by attempting to sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user?.email || "",
-        password: formData.password,
+      // Verify password using secure edge function
+      const { data, error: verifyError } = await supabase.functions.invoke('verify-password', {
+        body: { password: formData.password }
       });
 
-      if (signInError) {
+      if (verifyError || !data?.valid) {
         toast({
-          title: "Authentication Failed",
-          description: "Incorrect password",
+          title: "Verification Failed",
+          description: "Unable to verify password",
           variant: "destructive",
         });
         return;
