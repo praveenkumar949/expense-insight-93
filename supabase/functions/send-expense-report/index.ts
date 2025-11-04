@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@4.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -11,7 +12,6 @@ const corsHeaders = {
 interface ExpenseReportRequest {
   month: string;
   year: string;
-  email: string;
   expenses: Array<{
     date: string;
     category: string;
@@ -35,7 +35,49 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { month, year, email, expenses, summary }: ExpenseReportRequest = await req.json();
+    // Authenticate user and get their email
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error('Authentication error:', userError);
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Get user's email from profiles table
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile) {
+      console.error('Profile fetch error:', profileError);
+      return new Response(JSON.stringify({ error: 'User profile not found' }), {
+        status: 404,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const email = profile.email;
+    const { month, year, expenses, summary }: ExpenseReportRequest = await req.json();
+
+    console.log(`Sending report to authenticated user: ${user.id}, email: ${email}`);
 
     // Generate CSV content
     const csvHeaders = ["Date", "Category", "Sub-Category", "Merchant", "Amount (₹)"];
