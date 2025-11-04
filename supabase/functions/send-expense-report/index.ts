@@ -133,6 +133,11 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     // Send email with CSV attachment
+    // Convert CSV to base64 using TextEncoder to handle UTF-8 characters like ₹
+    const encoder = new TextEncoder();
+    const csvBytes = encoder.encode(csvContent);
+    const base64Csv = btoa(String.fromCharCode(...csvBytes));
+
     const emailResponse = await resend.emails.send({
       from: "Expense Tracker <onboarding@resend.dev>",
       to: [email],
@@ -141,7 +146,7 @@ const handler = async (req: Request): Promise<Response> => {
       attachments: [
         {
           filename: `expense-report-${month}-${year}.csv`,
-          content: btoa(csvContent),
+          content: base64Csv,
         },
       ],
     });
