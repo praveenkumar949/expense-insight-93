@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -108,9 +109,8 @@ const PasswordUpdateDialog = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="current_password">Current Password</Label>
-            <Input
+            <PasswordInput
               id="current_password"
-              type="password"
               value={formData.currentPassword}
               onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
               placeholder="Enter current password"
@@ -119,9 +119,8 @@ const PasswordUpdateDialog = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="new_password">New Password</Label>
-            <Input
+            <PasswordInput
               id="new_password"
-              type="password"
               value={formData.newPassword}
               onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
               placeholder="Enter new password"
@@ -130,9 +129,8 @@ const PasswordUpdateDialog = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirm_password">Confirm New Password</Label>
-            <Input
+            <PasswordInput
               id="confirm_password"
-              type="password"
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               placeholder="Confirm new password"
