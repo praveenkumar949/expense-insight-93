@@ -47,6 +47,30 @@ const ProfileEditDialog = () => {
       }
 
       const file = event.target.files[0];
+
+      // Validate file size (5MB limit)
+      const MAX_FILE_SIZE = 5 * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE) {
+        toast({
+          title: "File Too Large",
+          description: "Avatar must be smaller than 5MB",
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
+      }
+
+      // Validate file type
+      const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Only JPEG, PNG, GIF, and WebP images are allowed",
+          variant: "destructive",
+        });
+        setUploading(false);
+        return;
+      }
       const fileExt = file.name.split('.').pop();
       const filePath = `${user?.id}/${Math.random()}.${fileExt}`;
 

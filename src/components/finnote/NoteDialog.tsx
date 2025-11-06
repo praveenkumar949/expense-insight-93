@@ -160,11 +160,31 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (5MB limit)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
       toast({
         title: "File Too Large",
         description: "Please select a file smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file type
+    const ALLOWED_TYPES = [
+      'application/pdf',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Only PDF, JPG, PNG, WEBP, DOC, and DOCX files are allowed",
         variant: "destructive",
       });
       return;
