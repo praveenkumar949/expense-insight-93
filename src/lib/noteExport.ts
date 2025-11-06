@@ -9,6 +9,16 @@ interface ExportNote {
   updated_at: string;
 }
 
+// HTML escape function to prevent XSS in exports
+const escapeHtml = (unsafe: string): string => {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 // Export notes to PDF
 export const exportNotesToPDF = (notes: ExportNote[], filename: string) => {
   const doc = new jsPDF();
@@ -183,9 +193,9 @@ export const exportNotesToDOCX = (notes: ExportNote[], filename: string) => {
   notes.forEach((note, index) => {
     html += `
       <div class="note">
-        <div class="note-title">${index + 1}. ${note.title}</div>
-        ${note.category ? `<div class="note-category">Category: ${note.category}</div>` : ''}
-        <div class="note-content">${note.content}</div>
+        <div class="note-title">${index + 1}. ${escapeHtml(note.title)}</div>
+        ${note.category ? `<div class="note-category">Category: ${escapeHtml(note.category)}</div>` : ''}
+        <div class="note-content">${escapeHtml(note.content)}</div>
         <div class="note-dates">
           Created: ${new Date(note.created_at).toLocaleDateString('en-IN')} | 
           Updated: ${new Date(note.updated_at).toLocaleDateString('en-IN')}
