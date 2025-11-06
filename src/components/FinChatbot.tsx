@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { MessageCircle, X, Send, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   role: "user" | "assistant";
@@ -26,6 +25,23 @@ const FinChatbot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Don't show chatbot if user is not logged in
+  if (!user) {
+    return null;
+  }
+
+  // Reset messages when user changes (new login)
+  useEffect(() => {
+    if (user) {
+      setMessages([
+        {
+          role: "assistant",
+          content: "Hi! I'm FinBot, your financial assistant. How can I help you today?",
+        },
+      ]);
+    }
+  }, [user?.id]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -33,11 +49,6 @@ const FinChatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  // Don't show chatbot if user is not logged in
-  if (!user) {
-    return null;
-  }
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -56,18 +67,13 @@ const FinChatbot = () => {
     setMessages([...newMessages, assistantPlaceholder]);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error("Not authenticated");
-      }
-
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fin-chatbot`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({ messages: newMessages }),
         }
