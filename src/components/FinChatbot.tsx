@@ -25,11 +25,6 @@ const FinChatbot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Don't show chatbot if user is not logged in
-  if (!user) {
-    return null;
-  }
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -37,6 +32,11 @@ const FinChatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Don't show chatbot if user is not logged in
+  if (!user) {
+    return null;
+  }
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
