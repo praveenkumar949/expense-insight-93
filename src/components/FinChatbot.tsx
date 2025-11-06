@@ -30,18 +30,6 @@ const FinChatbot = () => {
     return null;
   }
 
-  // Reset messages when user changes (new login)
-  useEffect(() => {
-    if (user) {
-      setMessages([
-        {
-          role: "assistant",
-          content: "Hi! I'm FinBot, your financial assistant. How can I help you today?",
-        },
-      ]);
-    }
-  }, [user?.id]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
