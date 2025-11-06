@@ -104,8 +104,8 @@ const Analysis = () => {
   };
 
   return (
-    <div className="container px-4 py-8">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="container px-3 py-4 sm:px-4 sm:py-6 md:py-8 max-w-7xl mx-auto">
+      <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold sm:text-3xl">Analysis</h1>
           <p className="text-muted-foreground">Deep dive into your spending patterns</p>

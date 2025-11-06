@@ -118,10 +118,10 @@ const FinNote = () => {
   };
 
   return (
-    <div className="container px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold sm:text-3xl">FinNote</h1>
-        <p className="text-muted-foreground">Your personal finance notes</p>
+    <div className="container px-3 py-4 sm:px-4 sm:py-6 md:py-8 max-w-7xl mx-auto">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl font-bold sm:text-2xl md:text-3xl">FinNote</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Your personal finance notes</p>
       </div>
 
       {/* Search and Add */}

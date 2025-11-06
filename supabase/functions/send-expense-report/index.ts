@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "https://esm.sh/resend@4.0.0";
+import { Resend } from "npm:resend@4.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -138,8 +138,11 @@ const handler = async (req: Request): Promise<Response> => {
     const csvBytes = encoder.encode(csvContent);
     const base64Csv = btoa(String.fromCharCode(...csvBytes));
 
+    console.log(`Attempting to send email to: ${email}`);
+    console.log(`RESEND_API_KEY configured: ${!!Deno.env.get("RESEND_API_KEY")}`);
+
     const emailResponse = await resend.emails.send({
-      from: "Expense Tracker <onboarding@resend.dev>",
+      from: "FinGuide <onboarding@resend.dev>",
       to: [email],
       subject: `Expense Report - ${month} ${year}`,
       html: htmlContent,
@@ -151,7 +154,7 @@ const handler = async (req: Request): Promise<Response> => {
       ],
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Email sent successfully:", JSON.stringify(emailResponse));
 
     return new Response(JSON.stringify({ success: true, data: emailResponse }), {
       status: 200,
@@ -159,7 +162,13 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error sending expense report:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("Error details:", JSON.stringify(error, null, 2));
+    console.error("Error stack:", error.stack);
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: error.toString(),
+      hint: "Make sure your Resend API key is valid and your email domain is verified at https://resend.com/domains"
+    }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
