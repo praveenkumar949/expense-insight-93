@@ -11,6 +11,7 @@ import Calculators from "./pages/Calculators";
 import Savings from "./pages/Savings";
 import FinNote from "./pages/FinNote";
 import Auth from "./pages/Auth";
+import Index from "./pages/Index";
 import Navigation from "./components/Navigation";
 import NotFound from "./pages/NotFound";
 import FinChatbot from "./components/FinChatbot";
@@ -38,7 +39,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return <>{children}</>;
@@ -53,8 +54,9 @@ const App = () => (
         <BrowserRouter>
           <Navigation />
           <Routes>
+            <Route path="/" element={<Index />} />
             <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
-            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/input" element={<ProtectedRoute><Input /></ProtectedRoute>} />
             <Route path="/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
             <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />

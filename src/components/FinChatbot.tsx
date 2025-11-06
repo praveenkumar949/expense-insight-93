@@ -25,6 +25,11 @@ const FinChatbot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Don't show chatbot if user is not logged in
+  if (!user) {
+    return null;
+  }
+
   // Reset messages when user changes (new login)
   useEffect(() => {
     if (user) {
