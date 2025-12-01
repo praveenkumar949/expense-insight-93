@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, PlusCircle, TrendingUp, Calculator, PiggyBank, FileText, Menu, X } from "lucide-react";
+import { BarChart3, PlusCircle, TrendingUp, Calculator, PiggyBank, FileText, Menu, X, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileSheet from "./ProfileSheet";
 import { useState } from "react";
@@ -21,6 +21,7 @@ const Navigation = () => {
     { path: "/analysis", icon: TrendingUp, label: "Analysis" },
     { path: "/savings", icon: PiggyBank, label: "Savings" },
     { path: "/finnote", icon: FileText, label: "FinNote" },
+    { path: "/finedu", icon: GraduationCap, label: "FinEdu" },
     { path: "/calculators", icon: Calculator, label: "Calculators" },
   ];
 

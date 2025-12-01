@@ -10,6 +10,7 @@ import Analysis from "./pages/Analysis";
 import Calculators from "./pages/Calculators";
 import Savings from "./pages/Savings";
 import FinNote from "./pages/FinNote";
+import FinEdu from "./pages/FinEdu";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import Navigation from "./components/Navigation";
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
             <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
             <Route path="/finnote" element={<ProtectedRoute><FinNote /></ProtectedRoute>} />
+            <Route path="/finedu" element={<ProtectedRoute><FinEdu /></ProtectedRoute>} />
             <Route path="/calculators" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
