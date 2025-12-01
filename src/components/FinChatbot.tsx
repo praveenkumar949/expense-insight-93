@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
+import { Card, CardDescription } from "@/components/ui/card";
 import { MessageCircle, X, Send, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -170,7 +170,10 @@ const FinChatbot = () => {
             </Button>
           </div>
 
-          {/* Disclaimer */}
+          {/* Disclaimer - Using CardDescription for accessibility */}
+          <CardDescription className="sr-only">
+            FinBot AI-powered financial assistant chatbot
+          </CardDescription>
           <div className="p-3 bg-amber-50 dark:bg-amber-950 border-b border-amber-200 dark:border-amber-800">
             <div className="flex gap-2 text-xs">
               <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
