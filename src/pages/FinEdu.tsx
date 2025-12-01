@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { 
   BookOpen, 
   GraduationCap, 
@@ -18,7 +26,8 @@ import {
   Play,
   CheckCircle2,
   Award,
-  Lightbulb
+  Lightbulb,
+  ExternalLink
 } from "lucide-react";
 
 const categories = [
@@ -123,6 +132,24 @@ const resources = [
 const FinEdu = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<typeof featuredArticles[0] | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<typeof courses[0] | null>(null);
+  const { toast } = useToast();
+
+  const handleDownloadResource = (resourceName: string) => {
+    toast({
+      title: "Download Started",
+      description: `Downloading ${resourceName}...`,
+    });
+  };
+
+  const handleStartCourse = (course: typeof courses[0]) => {
+    setSelectedCourse(course);
+  };
+
+  const handleReadArticle = (article: typeof featuredArticles[0]) => {
+    setSelectedArticle(article);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -233,7 +260,11 @@ const FinEdu = () => {
                       </div>
                       <span>{article.date}</span>
                     </div>
-                    <Button className="w-full mt-4" variant="outline">
+                    <Button 
+                      className="w-full mt-4" 
+                      variant="outline"
+                      onClick={() => handleReadArticle(article)}
+                    >
                       Read Article
                     </Button>
                   </CardContent>
@@ -277,7 +308,11 @@ const FinEdu = () => {
                         <Progress value={course.progress} />
                       </div>
                     )}
-                    <Button className="w-full" variant={course.progress === 100 ? "outline" : "default"}>
+                    <Button 
+                      className="w-full" 
+                      variant={course.progress === 100 ? "outline" : "default"}
+                      onClick={() => handleStartCourse(course)}
+                    >
                       {course.progress === 100 ? (
                         <>
                           <CheckCircle2 className="mr-2 h-4 w-4" />
@@ -310,15 +345,27 @@ const FinEdu = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <Button variant="outline" className="h-auto py-3 sm:py-4 flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto py-3 sm:py-4 flex-col gap-2"
+                    onClick={() => toast({ title: "Coming Soon", description: "Budget Simulator will be available soon!" })}
+                  >
                     <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6" />
                     <span className="text-sm sm:text-base">Budget Simulator</span>
                   </Button>
-                  <Button variant="outline" className="h-auto py-3 sm:py-4 flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto py-3 sm:py-4 flex-col gap-2"
+                    onClick={() => toast({ title: "Coming Soon", description: "Financial Quiz will be available soon!" })}
+                  >
                     <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6" />
                     <span className="text-sm sm:text-base">Financial Quiz</span>
                   </Button>
-                  <Button variant="outline" className="h-auto py-3 sm:py-4 flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto py-3 sm:py-4 flex-col gap-2"
+                    onClick={() => toast({ title: "Coming Soon", description: "Progress Tracker will be available soon!" })}
+                  >
                     <Award className="h-5 w-5 sm:h-6 sm:w-6" />
                     <span className="text-sm sm:text-base">Progress Tracker</span>
                   </Button>
@@ -350,7 +397,12 @@ const FinEdu = () => {
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="ml-2 flex-shrink-0">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="ml-2 flex-shrink-0"
+                      onClick={() => handleDownloadResource(resource.name)}
+                    >
                       <Download className="h-4 w-4" />
                       <span className="hidden sm:inline ml-2">Download</span>
                     </Button>
@@ -371,7 +423,13 @@ const FinEdu = () => {
                 <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {["Mint - Budget Tracker", "Groww - Investing", "Zerodha - Trading", 
                     "CRED - Credit Cards", "ET Money - Mutual Funds", "PolicyBazaar - Insurance"].map((tool) => (
-                    <Button key={tool} variant="outline" className="justify-start">
+                    <Button 
+                      key={tool} 
+                      variant="outline" 
+                      className="justify-start gap-2"
+                      onClick={() => toast({ title: "External Link", description: `Opening ${tool}...` })}
+                    >
+                      <ExternalLink className="h-4 w-4" />
                       {tool}
                     </Button>
                   ))}
@@ -422,6 +480,103 @@ const FinEdu = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Article Dialog */}
+      <Dialog open={!!selectedArticle} onOpenChange={() => setSelectedArticle(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{selectedArticle?.title}</DialogTitle>
+            <DialogDescription>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
+                <div className="flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  {selectedArticle?.author}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {selectedArticle?.readTime}
+                </div>
+                <span>{selectedArticle?.date}</span>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <Badge>{selectedArticle?.category}</Badge>
+            <p className="text-lg">{selectedArticle?.excerpt}</p>
+            <div className="prose dark:prose-invert max-w-none">
+              <p>
+                This is where the full article content would be displayed. In a real implementation,
+                this would fetch the complete article from your backend and render it here with
+                proper formatting, images, and interactive elements.
+              </p>
+              <p>
+                The article would include detailed explanations, examples, charts, and actionable
+                advice related to {selectedArticle?.category}.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Course Dialog */}
+      <Dialog open={!!selectedCourse} onOpenChange={() => setSelectedCourse(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{selectedCourse?.title}</DialogTitle>
+            <DialogDescription>
+              <div className="flex items-center gap-4 text-sm mt-2">
+                <Badge>{selectedCourse?.level}</Badge>
+                <span>{selectedCourse?.lessons} lessons</span>
+                <span>{selectedCourse?.duration}</span>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 mt-4">
+            {selectedCourse && selectedCourse.progress > 0 && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Your Progress</span>
+                  <span className="font-medium">{selectedCourse.progress}%</span>
+                </div>
+                <Progress value={selectedCourse.progress} />
+              </div>
+            )}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Course Overview</h3>
+              <p className="text-muted-foreground">
+                This comprehensive course covers all aspects of {selectedCourse?.title.toLowerCase()}.
+                You'll learn through a combination of video lessons, interactive exercises, and
+                real-world examples.
+              </p>
+              <h4 className="font-semibold">What You'll Learn:</h4>
+              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                <li>Fundamental concepts and principles</li>
+                <li>Practical strategies and techniques</li>
+                <li>Real-world applications and case studies</li>
+                <li>Expert tips and best practices</li>
+              </ul>
+              <Button className="w-full mt-6">
+                {selectedCourse?.progress === 100 ? (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Review Course
+                  </>
+                ) : selectedCourse?.progress > 0 ? (
+                  <>
+                    <Play className="mr-2 h-4 w-4" />
+                    Continue Learning
+                  </>
+                ) : (
+                  <>
+                    <Play className="mr-2 h-4 w-4" />
+                    Start Course
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
