@@ -15,6 +15,7 @@ serve(async (req) => {
     // Verify authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('No authorization header provided');
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -29,6 +30,7 @@ serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
+      console.error('Auth error:', authError);
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -36,11 +38,26 @@ serve(async (req) => {
     }
 
     const { messages } = await req.json();
+    
+    if (!messages || !Array.isArray(messages)) {
+      console.error('Invalid messages format');
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error('LOVABLE_API_KEY is not configured');
+      return new Response(JSON.stringify({ error: 'AI service not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
+
+    console.log('Sending request to Lovable AI Gateway for user:', user.id);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -61,7 +78,9 @@ serve(async (req) => {
 - Expense tracking guidance
 - Financial terminology explanations
 
-Keep responses concise, friendly, and practical. Always remind users to consult certified financial advisors for specific investment decisions. You can discuss general concepts, market trends, and financial planning strategies, but avoid giving specific stock recommendations or guaranteeing returns.`,
+Keep responses concise, friendly, and practical. Always remind users to consult certified financial advisors for specific investment decisions. You can discuss general concepts, market trends, and financial planning strategies, but avoid giving specific stock recommendations or guaranteeing returns.
+
+Format your responses with clear paragraphs and bullet points where appropriate to make information easy to read.`,
           },
           ...messages,
         ],
@@ -72,8 +91,30 @@ Keep responses concise, friendly, and practical. Always remind users to consult 
     if (!response.ok) {
       const errorText = await response.text();
       console.error("AI API error:", response.status, errorText);
-      throw new Error(`AI API error: ${response.status}`);
+      
+      // Handle rate limits
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      
+      // Handle payment required
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI service quota exceeded. Please try again later." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      
+      return new Response(JSON.stringify({ error: `AI service error: ${response.status}` }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
+
+    console.log('Successfully received response from AI Gateway');
 
     // Return streaming response
     return new Response(response.body, {
