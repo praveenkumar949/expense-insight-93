@@ -4,4 +4,4 @@ project_id = "vxjohmcjtfojuljiygds"
 verify_jwt = false
 
 [functions.fin-chatbot]
-verify_jwt = true
+verify_jwt = false

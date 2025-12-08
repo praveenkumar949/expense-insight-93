@@ -73,7 +73,19 @@ const FinChatbot = () => {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to get response");
+      // Handle specific error status codes
+      if (response.status === 429) {
+        throw new Error("Too many requests. Please wait a moment and try again.");
+      }
+      
+      if (response.status === 402) {
+        throw new Error("Service quota exceeded. Please try again later.");
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to get response");
+      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
@@ -106,7 +118,7 @@ const FinChatbot = () => {
               if (content) {
                 accumulatedContent += content;
                 
-                // Update the last message with accumulated content and add typing effect
+                // Update the last message with accumulated content
                 setMessages((prev) => {
                   const updated = [...prev];
                   updated[updated.length - 1] = {
@@ -115,21 +127,30 @@ const FinChatbot = () => {
                   };
                   return updated;
                 });
-                
-                // Small delay to create typing effect
-                await new Promise(resolve => setTimeout(resolve, 20));
               }
             } catch (e) {
               // Ignore parse errors for incomplete chunks
             }
           }
         }
+
+        // Handle case where no content was received
+        if (!accumulatedContent) {
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = {
+              role: "assistant",
+              content: "I apologize, but I couldn't process your request. Please try again.",
+            };
+            return updated;
+          });
+        }
       }
     } catch (error: any) {
       console.error("Chatbot error:", error);
       toast({
-        title: "Error",
-        description: "Failed to get response from FinBot",
+        title: "FinBot Error",
+        description: error.message || "Failed to get response from FinBot",
         variant: "destructive",
       });
       
