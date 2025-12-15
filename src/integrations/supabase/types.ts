@@ -122,6 +122,57 @@ export type Database = {
         }
         Relationships: []
       }
+      policies: {
+        Row: {
+          created_at: string
+          due_date: string
+          expiry_date: string | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          policy_name: string
+          policy_number: string | null
+          policy_type: string
+          premium_amount: number
+          provider: string | null
+          renewal_frequency: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_date: string
+          expiry_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          policy_name: string
+          policy_number?: string | null
+          policy_type: string
+          premium_amount: number
+          provider?: string | null
+          renewal_frequency?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string
+          expiry_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          policy_name?: string
+          policy_number?: string | null
+          policy_type?: string
+          premium_amount?: number
+          provider?: string | null
+          renewal_frequency?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -161,6 +212,60 @@ export type Database = {
         }
         Relationships: []
       }
+      reminders: {
+        Row: {
+          amount: number | null
+          category: string
+          created_at: string
+          description: string | null
+          due_date: string
+          frequency: string
+          id: string
+          is_active: boolean | null
+          is_auto_debit: boolean | null
+          is_paid: boolean | null
+          last_notified_at: string | null
+          reminder_days: number[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          category: string
+          created_at?: string
+          description?: string | null
+          due_date: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          is_auto_debit?: boolean | null
+          is_paid?: boolean | null
+          last_notified_at?: string | null
+          reminder_days?: number[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          is_auto_debit?: boolean | null
+          is_paid?: boolean | null
+          last_notified_at?: string | null
+          reminder_days?: number[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       savings_goals: {
         Row: {
           created_at: string | null
@@ -193,6 +298,54 @@ export type Database = {
           target_amount?: number
           target_date?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          billing_date: string
+          category: string
+          created_at: string
+          frequency: string
+          id: string
+          is_active: boolean | null
+          is_auto_debit: boolean | null
+          name: string
+          notes: string | null
+          provider: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          billing_date: string
+          category: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          is_auto_debit?: boolean | null
+          name: string
+          notes?: string | null
+          provider?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          billing_date?: string
+          category?: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          is_auto_debit?: boolean | null
+          name?: string
+          notes?: string | null
+          provider?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

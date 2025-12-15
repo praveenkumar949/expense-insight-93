@@ -9,6 +9,7 @@ import Input from "./pages/Input";
 import Analysis from "./pages/Analysis";
 import Calculators from "./pages/Calculators";
 import Savings from "./pages/Savings";
+import FinRemind from "./pages/FinRemind";
 import FinNote from "./pages/FinNote";
 import FinEdu from "./pages/FinEdu";
 import Auth from "./pages/Auth";
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/input" element={<ProtectedRoute><Input /></ProtectedRoute>} />
             <Route path="/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
             <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
+            <Route path="/finremind" element={<ProtectedRoute><FinRemind /></ProtectedRoute>} />
             <Route path="/finnote" element={<ProtectedRoute><FinNote /></ProtectedRoute>} />
             <Route path="/finedu" element={<ProtectedRoute><FinEdu /></ProtectedRoute>} />
             <Route path="/calculators" element={<ProtectedRoute><Calculators /></ProtectedRoute>} />
