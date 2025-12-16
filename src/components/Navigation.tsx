@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, PlusCircle, TrendingUp, Calculator, PiggyBank, FileText, Menu, X, GraduationCap, Bell } from "lucide-react";
+import { BarChart3, PlusCircle, TrendingUp, Calculator, PiggyBank, FileText, Menu, GraduationCap, Bell, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileSheet from "./ProfileSheet";
 import { useState } from "react";
@@ -20,6 +20,7 @@ const Navigation = () => {
     { path: "/input", icon: PlusCircle, label: "Input" },
     { path: "/analysis", icon: TrendingUp, label: "Analysis" },
     { path: "/savings", icon: PiggyBank, label: "Savings" },
+    { path: "/portfolio", icon: Briefcase, label: "Portfolio" },
     { path: "/finremind", icon: Bell, label: "FinRemind" },
     { path: "/finnote", icon: FileText, label: "FinNote" },
     { path: "/finedu", icon: GraduationCap, label: "FinEdu" },
@@ -78,7 +79,13 @@ const Navigation = () => {
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
-              <nav className="mt-6 flex flex-col gap-2">
+              
+              {/* Profile at TOP of mobile menu */}
+              <div className="mt-4 pb-4 border-b">
+                <ProfileSheet />
+              </div>
+              
+              <nav className="mt-4 flex flex-col gap-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.path;
@@ -100,9 +107,6 @@ const Navigation = () => {
                   );
                 })}
               </nav>
-              <div className="mt-6 pt-6 border-t">
-                <ProfileSheet />
-              </div>
             </SheetContent>
           </Sheet>
         </div>
