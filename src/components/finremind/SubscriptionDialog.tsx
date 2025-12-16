@@ -98,7 +98,7 @@ export const SubscriptionDialog = ({ subscription, onSave, trigger }: Subscripti
             <Label htmlFor="category">Category *</Label>
             <Select
               value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
+              onValueChange={(value) => setFormData({ ...formData, category: value as Subscription['category'] })}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -125,10 +125,10 @@ export const SubscriptionDialog = ({ subscription, onSave, trigger }: Subscripti
             </div>
             <div>
               <Label htmlFor="frequency">Frequency</Label>
-              <Select
-                value={formData.frequency}
-                onValueChange={(value) => setFormData({ ...formData, frequency: value })}
-              >
+            <Select
+              value={formData.frequency}
+              onValueChange={(value) => setFormData({ ...formData, frequency: value as Subscription['frequency'] })}
+            >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
