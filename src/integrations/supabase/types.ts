@@ -122,6 +122,54 @@ export type Database = {
         }
         Relationships: []
       }
+      investments: {
+        Row: {
+          category: string
+          created_at: string
+          current_value: number
+          id: string
+          invested_amount: number
+          name: string
+          notes: string | null
+          purchase_date: string
+          status: string
+          sub_category: string | null
+          units: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          invested_amount?: number
+          name: string
+          notes?: string | null
+          purchase_date?: string
+          status?: string
+          sub_category?: string | null
+          units?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          invested_amount?: number
+          name?: string
+          notes?: string | null
+          purchase_date?: string
+          status?: string
+          sub_category?: string | null
+          units?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       policies: {
         Row: {
           created_at: string
@@ -298,6 +346,60 @@ export type Database = {
           target_amount?: number
           target_date?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sip_investments: {
+        Row: {
+          category: string | null
+          created_at: string
+          current_value: number
+          fund_name: string
+          id: string
+          is_active: boolean
+          missed_count: number
+          monthly_amount: number
+          next_sip_date: string
+          notes: string | null
+          sip_date_of_month: number
+          start_date: string
+          total_invested: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          current_value?: number
+          fund_name: string
+          id?: string
+          is_active?: boolean
+          missed_count?: number
+          monthly_amount: number
+          next_sip_date: string
+          notes?: string | null
+          sip_date_of_month?: number
+          start_date: string
+          total_invested?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          current_value?: number
+          fund_name?: string
+          id?: string
+          is_active?: boolean
+          missed_count?: number
+          monthly_amount?: number
+          next_sip_date?: string
+          notes?: string | null
+          sip_date_of_month?: number
+          start_date?: string
+          total_invested?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
