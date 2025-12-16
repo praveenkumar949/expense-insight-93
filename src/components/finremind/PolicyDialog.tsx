@@ -98,10 +98,10 @@ export const PolicyDialog = ({ policy, onSave, trigger }: PolicyDialogProps) => 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="policy_type">Type *</Label>
-              <Select
-                value={formData.policy_type}
-                onValueChange={(value) => setFormData({ ...formData, policy_type: value })}
-              >
+            <Select
+              value={formData.policy_type}
+              onValueChange={(value) => setFormData({ ...formData, policy_type: value as Policy['policy_type'] })}
+            >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -137,10 +137,10 @@ export const PolicyDialog = ({ policy, onSave, trigger }: PolicyDialogProps) => 
             </div>
             <div>
               <Label htmlFor="renewal_frequency">Renewal</Label>
-              <Select
-                value={formData.renewal_frequency}
-                onValueChange={(value) => setFormData({ ...formData, renewal_frequency: value })}
-              >
+            <Select
+              value={formData.renewal_frequency}
+              onValueChange={(value) => setFormData({ ...formData, renewal_frequency: value as Policy['renewal_frequency'] })}
+            >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

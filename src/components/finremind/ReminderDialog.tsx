@@ -102,7 +102,7 @@ export const ReminderDialog = ({ reminder, onSave, trigger }: ReminderDialogProp
             <Label htmlFor="category">Category *</Label>
             <Select
               value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
+              onValueChange={(value) => setFormData({ ...formData, category: value as Reminder['category'] })}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -142,7 +142,7 @@ export const ReminderDialog = ({ reminder, onSave, trigger }: ReminderDialogProp
             <Label htmlFor="frequency">Frequency</Label>
             <Select
               value={formData.frequency}
-              onValueChange={(value) => setFormData({ ...formData, frequency: value })}
+              onValueChange={(value) => setFormData({ ...formData, frequency: value as Reminder['frequency'] })}
             >
               <SelectTrigger>
                 <SelectValue />
