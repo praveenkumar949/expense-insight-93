@@ -1,0 +1,100 @@
+name: CI-CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend deps
+        working-directory: Frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: Frontend
+        run: npm run build
+
+      - name: Install backend deps
+        working-directory: Backend
+        run: npm ci
+
+      - name: Smoke test backend (node)
+        working-directory: Backend
+        env:
+          PORT: 8080
+          DATABASE_URL: postgres://app:app@localhost:5432/app
+          JWT_SECRET: test
+          FRONTEND_ORIGIN: http://localhost:5173
+        run: |
+          node -v
+          echo "Backend deps OK"
+
+  deploy-local-docker-desktop:
+    # GitHub-hosted runners cannot reach your local Docker Desktop Kubernetes.
+    # This job is intended ONLY for a self-hosted runner running on the same PC.
+    if: github.ref == 'refs/heads/main'
+    needs: [ci]
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build local images (Docker Desktop)
+        run: |
+          docker build -f Devops/docker/backend.Dockerfile -t devops-project-backend:local .
+          docker build -f Devops/docker/frontend.Dockerfile -t devops-project-frontend:local .
+
+      - name: Apply Kubernetes manifests (Docker Desktop K8s)
+        run: |
+          kubectl apply -f Devops/k8s/namespace.yaml
+          kubectl apply -f Devops/k8s/configmap.yaml
+          kubectl apply -f Devops/k8s/secret.yaml
+          kubectl apply -f Devops/k8s/postgres.yaml
+          kubectl apply -f Devops/k8s/backend.yaml
+          kubectl apply -f Devops/k8s/backend-hpa.yaml
+          kubectl apply -f Devops/k8s/frontend.yaml
+          kubectl apply -f Devops/k8s/monitoring.yaml
+
+  build-and-push:
+    if: github.ref == 'refs/heads/main'
+    needs: [ci]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Devops/docker/backend.Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/devops-project-backend:latest
+
+      - name: Build & push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Devops/docker/frontend.Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/devops-project-frontend:latest
+

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "./useAuth";
 
 interface Profile {
@@ -26,16 +26,12 @@ export const useProfile = () => {
     }
 
     const fetchProfile = async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (!error && data) {
+      try {
+        const data = await api.getProfile();
         setProfile(data);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchProfile();

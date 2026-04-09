@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "./useAuth";
 import { toast } from "sonner";
 
@@ -53,32 +53,22 @@ export const usePortfolio = () => {
 
   const fetchInvestments = async () => {
     if (!user) return;
-    const { data, error } = await supabase
-      .from("investments")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      const data = await api.table.list("investments");
+      setInvestments(data as Investment[]);
+    } catch (error) {
       console.error("Error fetching investments:", error);
-      return;
     }
-    setInvestments(data as Investment[]);
   };
 
   const fetchSIPInvestments = async () => {
     if (!user) return;
-    const { data, error } = await supabase
-      .from("sip_investments")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      const data = await api.table.list("sip_investments");
+      setSipInvestments(data as SIPInvestment[]);
+    } catch (error) {
       console.error("Error fetching SIP investments:", error);
-      return;
     }
-    setSipInvestments(data as SIPInvestment[]);
   };
 
   const fetchAll = async () => {
@@ -100,11 +90,9 @@ export const usePortfolio = () => {
   // Investment CRUD
   const addInvestment = async (investment: Omit<Investment, "id" | "user_id" | "created_at" | "updated_at">) => {
     if (!user) return;
-    const { error } = await supabase.from("investments").insert({
-      ...investment,
-      user_id: user.id,
-    });
-    if (error) {
+    try {
+      await api.table.insert("investments", investment);
+    } catch (error) {
       toast.error("Failed to add investment");
       console.error(error);
       return;
@@ -114,8 +102,9 @@ export const usePortfolio = () => {
   };
 
   const updateInvestment = async (id: string, updates: Partial<Investment>) => {
-    const { error } = await supabase.from("investments").update(updates).eq("id", id);
-    if (error) {
+    try {
+      await api.table.update("investments", id, updates);
+    } catch {
       toast.error("Failed to update investment");
       return;
     }
@@ -124,8 +113,9 @@ export const usePortfolio = () => {
   };
 
   const deleteInvestment = async (id: string) => {
-    const { error } = await supabase.from("investments").delete().eq("id", id);
-    if (error) {
+    try {
+      await api.table.remove("investments", id);
+    } catch {
       toast.error("Failed to delete investment");
       return;
     }
@@ -136,11 +126,9 @@ export const usePortfolio = () => {
   // SIP CRUD
   const addSIP = async (sip: Omit<SIPInvestment, "id" | "user_id" | "created_at" | "updated_at">) => {
     if (!user) return;
-    const { error } = await supabase.from("sip_investments").insert({
-      ...sip,
-      user_id: user.id,
-    });
-    if (error) {
+    try {
+      await api.table.insert("sip_investments", sip);
+    } catch (error) {
       toast.error("Failed to add SIP");
       console.error(error);
       return;
@@ -150,8 +138,9 @@ export const usePortfolio = () => {
   };
 
   const updateSIP = async (id: string, updates: Partial<SIPInvestment>) => {
-    const { error } = await supabase.from("sip_investments").update(updates).eq("id", id);
-    if (error) {
+    try {
+      await api.table.update("sip_investments", id, updates);
+    } catch {
       toast.error("Failed to update SIP");
       return;
     }
@@ -160,8 +149,9 @@ export const usePortfolio = () => {
   };
 
   const deleteSIP = async (id: string) => {
-    const { error } = await supabase.from("sip_investments").delete().eq("id", id);
-    if (error) {
+    try {
+      await api.table.remove("sip_investments", id);
+    } catch {
       toast.error("Failed to delete SIP");
       return;
     }
