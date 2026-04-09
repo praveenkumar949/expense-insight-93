@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { api } from "@/integrations/api/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useToast } from "./use-toast";
 
@@ -64,34 +64,52 @@ export const useReminders = () => {
 
   const fetchReminders = async () => {
     if (!user) return;
-    try {
-      const data = await api.table.list("reminders");
-      setReminders(data as Reminder[]);
-    } catch (error) {
-      console.error("Error fetching reminders:", error);
+    
+    const { data, error } = await supabase
+      .from('reminders')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('due_date', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching reminders:', error);
       toast({ title: "Error", description: "Failed to fetch reminders", variant: "destructive" });
+    } else {
+      setReminders(data as Reminder[]);
     }
   };
 
   const fetchPolicies = async () => {
     if (!user) return;
-    try {
-      const data = await api.table.list("policies");
-      setPolicies(data as Policy[]);
-    } catch (error) {
-      console.error("Error fetching policies:", error);
+    
+    const { data, error } = await supabase
+      .from('policies')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('due_date', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching policies:', error);
       toast({ title: "Error", description: "Failed to fetch policies", variant: "destructive" });
+    } else {
+      setPolicies(data as Policy[]);
     }
   };
 
   const fetchSubscriptions = async () => {
     if (!user) return;
-    try {
-      const data = await api.table.list("subscriptions");
-      setSubscriptions(data as Subscription[]);
-    } catch (error) {
-      console.error("Error fetching subscriptions:", error);
+    
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('billing_date', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching subscriptions:', error);
       toast({ title: "Error", description: "Failed to fetch subscriptions", variant: "destructive" });
+    } else {
+      setSubscriptions(data as Subscription[]);
     }
   };
 
@@ -110,42 +128,56 @@ export const useReminders = () => {
   // Reminder CRUD
   const addReminder = async (reminder: Omit<Reminder, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'last_notified_at'>) => {
     if (!user) return null;
-    try {
-      const data = await api.table.insert("reminders", reminder);
-      toast({ title: "Success", description: "Reminder added successfully" });
-      await fetchReminders();
-      return data as Reminder;
-    } catch (error) {
-      console.error("Error adding reminder:", error);
+
+    const { data, error } = await supabase
+      .from('reminders')
+      .insert({ ...reminder, user_id: user.id })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding reminder:', error);
       toast({ title: "Error", description: "Failed to add reminder", variant: "destructive" });
       return null;
     }
+
+    toast({ title: "Success", description: "Reminder added successfully" });
+    await fetchReminders();
+    return data as Reminder;
   };
 
   const updateReminder = async (id: string, updates: Partial<Reminder>) => {
-    try {
-      await api.table.update("reminders", id, updates);
-      toast({ title: "Success", description: "Reminder updated" });
-      await fetchReminders();
-      return true;
-    } catch (error) {
-      console.error("Error updating reminder:", error);
+    const { error } = await supabase
+      .from('reminders')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating reminder:', error);
       toast({ title: "Error", description: "Failed to update reminder", variant: "destructive" });
       return false;
     }
+
+    toast({ title: "Success", description: "Reminder updated" });
+    await fetchReminders();
+    return true;
   };
 
   const deleteReminder = async (id: string) => {
-    try {
-      await api.table.remove("reminders", id);
-      toast({ title: "Success", description: "Reminder deleted" });
-      await fetchReminders();
-      return true;
-    } catch (error) {
-      console.error("Error deleting reminder:", error);
+    const { error } = await supabase
+      .from('reminders')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting reminder:', error);
       toast({ title: "Error", description: "Failed to delete reminder", variant: "destructive" });
       return false;
     }
+
+    toast({ title: "Success", description: "Reminder deleted" });
+    await fetchReminders();
+    return true;
   };
 
   const markAsPaid = async (id: string) => {
@@ -155,83 +187,111 @@ export const useReminders = () => {
   // Policy CRUD
   const addPolicy = async (policy: Omit<Policy, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return null;
-    try {
-      const data = await api.table.insert("policies", policy);
-      toast({ title: "Success", description: "Policy added successfully" });
-      await fetchPolicies();
-      return data as Policy;
-    } catch (error) {
-      console.error("Error adding policy:", error);
+
+    const { data, error } = await supabase
+      .from('policies')
+      .insert({ ...policy, user_id: user.id })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding policy:', error);
       toast({ title: "Error", description: "Failed to add policy", variant: "destructive" });
       return null;
     }
+
+    toast({ title: "Success", description: "Policy added successfully" });
+    await fetchPolicies();
+    return data as Policy;
   };
 
   const updatePolicy = async (id: string, updates: Partial<Policy>) => {
-    try {
-      await api.table.update("policies", id, updates);
-      toast({ title: "Success", description: "Policy updated" });
-      await fetchPolicies();
-      return true;
-    } catch (error) {
-      console.error("Error updating policy:", error);
+    const { error } = await supabase
+      .from('policies')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating policy:', error);
       toast({ title: "Error", description: "Failed to update policy", variant: "destructive" });
       return false;
     }
+
+    toast({ title: "Success", description: "Policy updated" });
+    await fetchPolicies();
+    return true;
   };
 
   const deletePolicy = async (id: string) => {
-    try {
-      await api.table.remove("policies", id);
-      toast({ title: "Success", description: "Policy deleted" });
-      await fetchPolicies();
-      return true;
-    } catch (error) {
-      console.error("Error deleting policy:", error);
+    const { error } = await supabase
+      .from('policies')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting policy:', error);
       toast({ title: "Error", description: "Failed to delete policy", variant: "destructive" });
       return false;
     }
+
+    toast({ title: "Success", description: "Policy deleted" });
+    await fetchPolicies();
+    return true;
   };
 
   // Subscription CRUD
   const addSubscription = async (subscription: Omit<Subscription, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     if (!user) return null;
-    try {
-      const data = await api.table.insert("subscriptions", subscription);
-      toast({ title: "Success", description: "Subscription added successfully" });
-      await fetchSubscriptions();
-      return data as Subscription;
-    } catch (error) {
-      console.error("Error adding subscription:", error);
+
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .insert({ ...subscription, user_id: user.id })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding subscription:', error);
       toast({ title: "Error", description: "Failed to add subscription", variant: "destructive" });
       return null;
     }
+
+    toast({ title: "Success", description: "Subscription added successfully" });
+    await fetchSubscriptions();
+    return data as Subscription;
   };
 
   const updateSubscription = async (id: string, updates: Partial<Subscription>) => {
-    try {
-      await api.table.update("subscriptions", id, updates);
-      toast({ title: "Success", description: "Subscription updated" });
-      await fetchSubscriptions();
-      return true;
-    } catch (error) {
-      console.error("Error updating subscription:", error);
+    const { error } = await supabase
+      .from('subscriptions')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating subscription:', error);
       toast({ title: "Error", description: "Failed to update subscription", variant: "destructive" });
       return false;
     }
+
+    toast({ title: "Success", description: "Subscription updated" });
+    await fetchSubscriptions();
+    return true;
   };
 
   const deleteSubscription = async (id: string) => {
-    try {
-      await api.table.remove("subscriptions", id);
-      toast({ title: "Success", description: "Subscription deleted" });
-      await fetchSubscriptions();
-      return true;
-    } catch (error) {
-      console.error("Error deleting subscription:", error);
+    const { error } = await supabase
+      .from('subscriptions')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting subscription:', error);
       toast({ title: "Error", description: "Failed to delete subscription", variant: "destructive" });
       return false;
     }
+
+    toast({ title: "Success", description: "Subscription deleted" });
+    await fetchSubscriptions();
+    return true;
   };
 
   // Helper functions

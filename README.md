@@ -4,12 +4,6 @@
 
 **URL**: https://lovable.dev/projects/c2e2d0ca-5d5e-4fd8-beed-5d7ab00806e9
 
-## Folder structure
-
-- `Frontend/`: React (Vite) frontend
-- `Backend/`: Backend code (includes legacy Supabase Edge Functions source)
-- `Database/`: Database-related assets (Supabase SQL migrations/config moved here)
-
 ## How can I edit this code?
 
 There are several ways of editing your application.
@@ -35,8 +29,7 @@ git clone <YOUR_GIT_URL>
 # Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies (frontend).
-cd Frontend
+# Step 3: Install the necessary dependencies.
 npm i
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
@@ -66,7 +59,6 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
-- Supabase (Postgres + Auth + Edge Functions)
 
 ## How can I deploy this project?
 

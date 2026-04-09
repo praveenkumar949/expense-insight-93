@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { api } from "@/integrations/api/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,18 +96,24 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      await api.signup({
+      const { error } = await supabase.auth.signUp({
         email: formData.email.trim(),
         password: formData.password,
-        full_name: formData.full_name.trim(),
-        phone_number: formData.phone_number.trim() || null,
+        options: {
+          data: {
+            full_name: formData.full_name.trim(),
+            phone_number: formData.phone_number.trim(),
+          },
+          emailRedirectTo: `${window.location.origin}/`,
+        },
       });
+
+      if (error) throw error;
 
       toast({
         title: "Success!",
-        description: "Account created successfully.",
+        description: "Account created successfully. You can now sign in.",
       });
-      navigate("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -124,16 +130,17 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      await api.login({
-        email: formData.email.trim(),
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
         password: formData.password,
       });
+
+      if (error) throw error;
 
       toast({
         title: "Welcome back!",
         description: "You have been signed in successfully.",
       });
-      navigate("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -146,11 +153,24 @@ const Auth = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    toast({
-      title: "Not available",
-      description: "Google sign-in is not configured in the new backend yet.",
-      variant: "destructive",
-    });
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -168,11 +188,20 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      toast({
-        title: "Not available",
-        description: "Password reset is not implemented in the new backend yet.",
-        variant: "destructive",
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
       });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "Your password has been updated successfully",
+      });
+
+      setIsResettingPassword(false);
+      setNewPassword("");
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error",
