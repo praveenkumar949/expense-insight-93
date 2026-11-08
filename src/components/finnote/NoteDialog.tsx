@@ -66,7 +66,7 @@ const NoteDialog = ({ open, onOpenChange, editingNote }: NoteDialogProps) => {
   const [attachmentUrl, setAttachmentUrl] = useState<string>("");
   const [autoSaving, setAutoSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const autoSaveTimerRef = useRef<NodeJS.Timeout>();
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [formData, setFormData] = useState({
     title: "",
     content: "",
