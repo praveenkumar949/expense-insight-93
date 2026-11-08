@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,8 +14,16 @@ serve(async (req) => {
   try {
     // Verify authentication
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
+    if (!authHeader?.startsWith("Bearer ")) {
       console.error('No authorization header provided');
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    const token = authHeader.slice("Bearer ".length).trim();
+    if (!token) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -28,8 +36,9 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const { data, error: authError } = await supabase.auth.getClaims(token);
+    const userId = data?.claims?.sub;
+    if (authError || typeof userId !== "string" || !userId) {
       console.error('Auth error:', authError);
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
@@ -57,7 +66,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('Sending request to Lovable AI Gateway for user:', user.id);
+    console.log('Sending request to Lovable AI Gateway for user:', userId);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
